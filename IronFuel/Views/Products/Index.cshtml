@@ -1,0 +1,32 @@
+﻿@model IEnumerable<ProductViewModel>
+
+<div>
+
+    <div class="row">
+        <div class="col-3">
+            Filter
+        </div>
+        <div class="col-9">
+            <div class="row">
+                <h3 class="fw-bold my-4">All Products</h3>
+                <h5 class="fw-semibold mb-4">@Model.Count() Products</h5>
+                <hr />
+                @foreach (var item in Model)
+                {
+                    <div class="card col-3 me-3 mt-4">
+                        <div class="card-body">
+                            <p>@item.Name</p>
+                            <div>Rating</div>
+                            <div>1245 Reviews</div>
+                            <div>3500 EGP</div>
+
+                        </div>
+                        <div class="card-footer">
+                            <a class="bg-black">+QUICK ADD</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
