@@ -1,4 +1,38 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// Select2
+function applySelect2() {
+    $('.js-select2').select2();
+    //Revalidate Select2 List After Select Item
+    //$('.js-select2').on('select2:select', function (e) {
+    //    $('form').not('#SignOut').validate().element('#' + $(this).attr('id'))
+    //});
+}
 
-// Write your JavaScript code.
+function adjustCanvas() {
+    var canvas = $("#mobileFilter");
+
+    if (window.innerWidth <= 700) {
+        canvas.removeClass("offcanvas-end")
+            .addClass("offcanvas-bottom");
+    } else {
+        canvas.removeClass('offcanvas-bottom')
+            .addClass('offcanvas-end'); 
+    }
+}
+
+
+
+// run on resize
+$(window).resize(function () {
+    adjustCanvas();
+});
+
+
+$(document).ready(function () {
+    applySelect2();
+
+    adjustCanvas();
+
+    $(".offcanvas .nav-link").on("click", function () {
+        $("#mobileMenu").removeClass("show");
+    });
+})

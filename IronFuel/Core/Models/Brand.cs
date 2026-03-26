@@ -8,7 +8,6 @@ namespace IronFuel.Core.Models
         [MaxLength(50)]
         public string Name { get; set; } = null!;
         public string? LogoUrl { get; set; }
-
-        //public ICollection<Product> Products { get; set; } = new List<Product>();
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

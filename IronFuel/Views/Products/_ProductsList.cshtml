@@ -1,0 +1,18 @@
+﻿@model ProductPageViewModel
+@{
+    var categoryName = (string.IsNullOrEmpty(Model.CategoryName) ? "All Products" : Model.CategoryName);
+}
+
+<div>
+    <input id="CategoryId" type="hidden" value="@Model.CategoryId" />
+    <h2 class="fw-bold mb-4">@categoryName</h2>
+    <h5 class="fw-semibold mb-4" id="ProductsCount">
+        @Model.Products.Count() products
+    </h5>
+    <hr class="mb-0" />
+    <div class="row row-cols-2 row-cols-lg-3 mb-4 g-3" id="ProductsContainer">
+        <partial name="_ProductsCard" model="Model.Products"></partial>
+    </div>
+</div>
+
+

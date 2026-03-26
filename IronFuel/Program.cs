@@ -20,6 +20,13 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddMemoryCache();
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler =
+            System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
 // Auto Mapper 
 builder.Services.AddAutoMapper(cfg =>
 {

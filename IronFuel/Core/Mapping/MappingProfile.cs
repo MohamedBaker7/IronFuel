@@ -4,8 +4,15 @@
     {
         public MappingProfile()
         {
-            // Categories
+            // Products
             CreateMap<Product, ProductViewModel>();
+            // Brands
+            CreateMap<Brand, BrandViewModel>();
+            // Categories
+            CreateMap<Category, CategoryViewModel>();
+            CreateMap<Category, CategoryNavViewModel>();
+            // Variants
+            CreateMap<ProductVariant, ProductVariantViewModel>();
         }
     }
 }
