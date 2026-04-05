@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
-namespace IronFuel.Core.ViewModels
+namespace IronFuel.Web.Core.ViewModels
 {
     public class ProductViewModel
     {
@@ -14,15 +14,21 @@ namespace IronFuel.Core.ViewModels
         public DateTime CreatedOn { get; set; }
         public DateTime? LastUpdatedOn { get; set; }
 
-        public IEnumerable<ProductVariantViewModel> Variants { get; set; } = new List<ProductVariantViewModel>();
-
         [Display(Name = "Flavour")]
         public string SelectedFlavour { get; set; } = string.Empty;
-
+        public IEnumerable<ProductVariantViewModel> Variants { get; set; } = new List<ProductVariantViewModel>();
         public IEnumerable<SelectListItem> Flavors { get; set; } = new List<SelectListItem>();
 
-        public decimal? LowestPrice { 
-            get {
+
+        [Display(Name = "Sizes")]
+        public string SelectedSizes { get; set; } = string.Empty;
+
+        public IEnumerable<SelectListItem> Sizes { get; set; } = new List<SelectListItem>();
+
+        public decimal? LowestPrice
+        {
+            get
+            {
                 decimal? lowestPrice = Variants
                     .Select(v => v.Price)
                     .Order().FirstOrDefault();

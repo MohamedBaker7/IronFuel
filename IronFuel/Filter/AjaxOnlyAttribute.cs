@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ActionConstraints;
 
-namespace IronFuel.Filter
+namespace IronFuel.Web.Filter
 {
 
     public class AjaxOnlyAttribute : ActionMethodSelectorAttribute

@@ -197,7 +197,6 @@ input[type="number"]:focus {
 }
 
 .product-rating {
-    background-color: var(--color-text-muted);
     width: fit-content;
 }
 
@@ -262,5 +261,6 @@ input[type="number"]:focus {
 .pointer {
     cursor: pointer;
 }
+
 
 /*End Override*/

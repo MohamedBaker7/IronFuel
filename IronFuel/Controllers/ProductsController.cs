@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using static System.Net.WebRequestMethods;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace IronFuel.Controllers
+namespace IronFuel.Web.Controllers
 {
     public class ProductsController : Controller
     {
@@ -9,6 +8,14 @@ namespace IronFuel.Controllers
         private readonly IMemoryCache _cache;
         private readonly IMapper _mapper;
         private int? _categoryId;
+        private static readonly (decimal Min, decimal Max)[] _sizeRanges =
+        {
+            (0.0m, 0.5m),
+            (0.5m, 1m),
+            (1m, 3m),
+            (3m, 6m),
+            (6m, 12m)
+        };
 
         public ProductsController(IMapper mapper, ApplicationDbContext context, IMemoryCache cache)
         {
@@ -23,21 +30,20 @@ namespace IronFuel.Controllers
 
             var products = GetProducts(_categoryId);
 
-
             var ProductsModel = _mapper.Map<IEnumerable<ProductViewModel>>(products);
 
-            return View(ProductPageViewModel(ProductsModel, categoryId, categoryName));
+            return View(BuildProductPageViewModel(ProductsModel, categoryId, categoryName));
         }
 
         [AjaxOnly, HttpPost]
-        public IActionResult Filter(ProductFilterViewModel filter)
+        public IActionResult Filter(ProductFilterDto filter)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var products = GetProducts(filter.CategoryId);
 
-            var ProductsModel = _mapper.Map<IEnumerable<ProductViewModel>>(GetFilteredPrducts(products, filter));
+            var ProductsModel = _mapper.Map<IEnumerable<ProductViewModel>>(GetFilteredProducts(products, filter));
 
             return PartialView("_ProductsCard", ProductsModel);
         }
@@ -49,10 +55,12 @@ namespace IronFuel.Controllers
                     .Include(p => p.Brand)
                     .Include(p => p.Category)
                     .Include(p => p.Variants)
+                    .ThenInclude(v => v.Flavour)
                     .SingleOrDefault(p => p.Id == id);
 
-            if(product is null)
+            if (product is null)
                 return NotFound();
+
 
             var viewModel = _mapper.Map<ProductViewModel>(product);
 
@@ -60,8 +68,19 @@ namespace IronFuel.Controllers
                     .Distinct()
                     .Select(f => new SelectListItem
                     {
-                        Value = f,
-                        Text = f
+                        Value = f.Id.ToString(),
+                        Text = f.Name
+                    });
+
+            viewModel.Sizes = product.Variants
+                    .Select(s => new { s.Size, s.ServingWeight })
+                    .Distinct()
+                    .OrderBy(s => s.Size)
+                    .Select(f => new SelectListItem
+                    {
+                        Value = f.Size.ToString(),
+                        Text = f.Size >= 1000 ? $"{(f.Size / 1000).ToString("0.##")} kg ({Math.Round(f.Size / f.ServingWeight)} Servings)"
+                        : $"{f.Size.ToString("0.##")} g ({Math.Round(f.Size / f.ServingWeight)} Servings)"
                     });
 
             return View(viewModel);
@@ -79,6 +98,7 @@ namespace IronFuel.Controllers
                     .Include(p => p.Brand)
                     .Include(p => p.Category)
                     .Include(p => p.Variants)
+                    .ThenInclude(v => v.Flavour)
                     .Where(p => !p.IsDeleted && (p.CategoryId == CategoryId || CategoryId == null))
                     .ToList();
 
@@ -90,7 +110,19 @@ namespace IronFuel.Controllers
             return products;
         }
 
-        private IEnumerable<Product> GetFilteredPrducts(List<Product> products,ProductFilterViewModel filter)
+        [HttpGet]
+        public IActionResult GetSizesByFlavour(int productId, int flavourId)
+        {
+            var sizes = _context.ProductVariants
+                .Where(v => v.FlavourId == flavourId && v.ProductId == productId)
+                .Select(v => new { v.Size, v.ServingWeight })
+                .Distinct()
+                .ToList();
+
+            return Json(sizes);
+        }
+
+        private IEnumerable<Product> GetFilteredProducts(List<Product> products, ProductFilterDto filter)
         {
             if (filter.InStockOnly)
                 products = products.Where(p => p.Variants.Any(v => v.StockQuantity > 0)).ToList();
@@ -110,7 +142,7 @@ namespace IronFuel.Controllers
 
             if (filter.Flavors?.Length > 0)
             {
-                products = products.Where(p => p.Variants.Any(v => filter.Flavors.Contains(v.Flavour))).ToList();
+                products = products.Where(p => p.Variants.Any(v => filter.Flavors.Contains(v.Flavour.Name))).ToList();
             }
 
             if (filter.Sizes?.Length > 0)
@@ -140,7 +172,7 @@ namespace IronFuel.Controllers
                 if (!parsedRanges.Any(p => p == null))
                 {
                     products = products.Where(p => p.Variants.Any(v =>
-                                    parsedRanges.Any(r => v.Size >= r?.Min && v.Size < r?.Max)))
+                                    parsedRanges.Any(r => v.Size >= r?.Min * 1000 && v.Size < r?.Max * 1000)))
                                     .ToList();
                 }
 
@@ -149,49 +181,45 @@ namespace IronFuel.Controllers
             return products;
         }
 
-        private ProductPageViewModel ProductPageViewModel(IEnumerable<ProductViewModel> ProductsModel, int? categoryId, string? categoryName)
+        private ProductPageViewModel BuildProductPageViewModel(IEnumerable<ProductViewModel> productsModel, int? categoryId, string? categoryName)
         {
-            var ranges = new List<(decimal Min, decimal Max)>
+            var products = productsModel.ToList();
+
+            var productVariants = products
+                .SelectMany(p => p.Variants.Select(v => new
                 {
-                    (0.0m, 0.5m),
-                    (0.5m, 1m),
-                    (1m, 3m),
-                    (3m, 6m),
-                    (6m, 12m)
-                };
+                    ProductId = p.Id,
+                    FlavourName = v.Flavour.Name,
+                    v.Price,
+                    v.Size
+                }))
+                .ToList();
+
             ProductPageViewModel viewModel = new()
             {
                 CategoryId = categoryId,
                 CategoryName = categoryName,
-                Products = ProductsModel,
-                MaxPrice = ProductsModel.SelectMany(p => p.Variants.Select(v => v.Price)).Order().LastOrDefault(),
-
-                Flavours = ProductsModel.SelectMany(p => p.Variants)
-                            .GroupBy(p => p.Flavour)
-                            .Select(g => new FlavourDto
-                            {
-                                Flavour = g.Key,
-                                Count = g.Count()
-                            })
-                            .ToList(),
-
-
-
-
-                Sizes = ranges
-                        .Select(r => new SizeDto
+                Products = products,
+                MaxPrice = productVariants.Select(v => v.Price).Order().LastOrDefault(),
+                Flavours = productVariants
+                    .Select(v => new { v.ProductId, v.FlavourName })
+                    .Distinct()
+                    .GroupBy(x => x.FlavourName)
+                    .Select(g => new ProductFlavourFacetDto
+                    {
+                        Flavour = g.Key,
+                        Count = g.Count()
+                    })
+                    .ToList(),
+                Sizes = _sizeRanges
+                        .Select(r => new ProductSizeFacetDto
                         {
                             Min = r.Min,
                             Max = r.Max,
                             Label = $"{r.Min} - {r.Max}",
-                            Count = ProductsModel
-                                .SelectMany(p => p.Variants, (product, variant) => new
-                                {
-                                    product.Id,
-                                    variant.Size
-                                })
-                                .Where(x => x.Size >= r.Min && x.Size < r.Max)
-                                .Select(x => x.Id)
+                            Count = productVariants
+                                .Where(x => x.Size >= r.Min * 1000 && x.Size < r.Max * 1000)
+                                .Select(x => x.ProductId)
                                 .Distinct()
                                 .Count()
                         })

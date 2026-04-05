@@ -1,4 +1,4 @@
-﻿namespace IronFuel.Core.ViewModels
+﻿namespace IronFuel.Web.Core.ViewModels
 {
     public class BrandViewModel
     {

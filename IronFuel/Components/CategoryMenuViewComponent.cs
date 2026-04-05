@@ -1,4 +1,6 @@
-﻿namespace IronFuel.Components
+﻿
+
+namespace IronFuel.Web.Components
 {
     public class CategoryMenuViewComponent : ViewComponent
     {

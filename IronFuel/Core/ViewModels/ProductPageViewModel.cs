@@ -1,6 +1,4 @@
-﻿using IronFuel.Core.DTO;
-
-namespace IronFuel.Core.ViewModels
+namespace IronFuel.Web.Core.ViewModels
 {
     public class ProductPageViewModel
     {
@@ -8,8 +6,8 @@ namespace IronFuel.Core.ViewModels
         public string? CategoryName { get; set; }
         public decimal? MaxPrice { get; set; }
         public IEnumerable<ProductViewModel> Products { get; set; } = new List<ProductViewModel>();
-        public List<FlavourDto> Flavours { get; set; } = new List<FlavourDto>();
-        public List<SizeDto> Sizes { get; set; } = new List<SizeDto>();
+        public List<ProductFlavourFacetDto> Flavours { get; set; } = new List<ProductFlavourFacetDto>();
+        public List<ProductSizeFacetDto> Sizes { get; set; } = new List<ProductSizeFacetDto>();
 
     }
 }
