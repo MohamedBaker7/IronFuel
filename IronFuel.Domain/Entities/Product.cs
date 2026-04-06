@@ -14,6 +14,7 @@
 
 
         public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
+        public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
 
     }
 }

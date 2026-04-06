@@ -10,6 +10,7 @@ namespace IronFuel.Application.Common.Interfaces
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<Flavour> Flavors { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
         public int SaveChanges();
 
     }

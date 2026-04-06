@@ -21,6 +21,13 @@
     });
 }
 
+$(document).on('click', '.thumb-img', function () {
+    var src = $(this).attr('src');
+    if (src) {
+        $('#mainProductImage').attr('src', src);
+    }
+});
+
 $(document).ready(function () {
 
     var productId = $('#ProductId').val();
@@ -31,6 +38,18 @@ $(document).ready(function () {
     $('#Flavors').on('change', function () {
         flavourId = $(this).val();
         getSizeByFlavour(productId, flavourId);
+    });
+
+    var thumbImages = $('.thumb-img');
+
+    thumbImages.on('click', function () {
+        var currentImg = $(this);
+        thumbImages.removeClass('selectedThumb');
+        currentImg.addClass('selectedThumb');
+       
     })
+
+
+
 
 });

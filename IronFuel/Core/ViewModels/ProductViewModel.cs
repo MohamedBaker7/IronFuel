@@ -25,6 +25,11 @@ namespace IronFuel.Web.Core.ViewModels
 
         public IEnumerable<SelectListItem> Sizes { get; set; } = new List<SelectListItem>();
 
+        /// <summary>
+        /// Gallery images, ordered for display (primary first).
+        /// </summary>
+        public IReadOnlyList<ProductImageViewModel> Images { get; set; } = Array.Empty<ProductImageViewModel>();
+
         public decimal? LowestPrice
         {
             get

@@ -2,9 +2,15 @@
 
 @{
     ViewData["Title"] = Model.Name;
+    var placeholder = Url.Content("~/Images/creatine-micronized.png");
+    var gallery = Model.Images.Count > 0 ? Model.Images : null;
+    var mainSrc = gallery != null
+        ? Url.Content("~/" + gallery[0].RelativePath.TrimStart('/'))
+        : placeholder;
 }
+
 <input id="ProductId" type="hidden" value="@Model.Id" />
-<div class="mt-2 ms-4">
+<div class="mt-3 ms-4">
     <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
@@ -19,20 +25,30 @@
     <div class="col">
         <div class="row">
             <div class="thumbnails col-2 thumbs-wrapper">
-                @for (int i = 0; i <= 10; i++)
+                @if (gallery != null)
+                {
+                    foreach (var img in gallery)
+                    {
+                        var thumbSrc = Url.Content("~/" + img.RelativePath.TrimStart('/'));
+                        <div class="d-flex justify-content-center mb-2">
+                            <img src="@thumbSrc" class="thumb-img" alt="" role="button" />
+                        </div>
+                    }
+                }
+                else
                 {
                     <div class="d-flex justify-content-center mb-2">
-                        <img src="~/Images/gold-standard-100-whey-protein.png" class="thumb-img" />
+                        <img src="@placeholder" class="thumb-img" alt="" role="button" />
                     </div>
                 }
             </div>
             <div class="main-image mt-3 col-10">
-                <img id="mainProductImage" src="~/Images/gold-standard-100-whey-protein.png" class="img-fluid" />
+                <img id="mainProductImage" src="@mainSrc" class="img-fluid" alt="@Model.Name" />
             </div>
         </div>
         </div>
-    <div class="col">
-        <h1 class="fw-bold">@Model.Name</h1>
+    <div class="col-5 offset-1">
+        <h1 class="fw-bold mt-3">@Model.Name</h1>
         <p class="fs-5 py-3 text-muted">@Model.Description</p>
         <hr />
         <div class="row">

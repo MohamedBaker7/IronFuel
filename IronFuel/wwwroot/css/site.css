@@ -183,7 +183,7 @@ input[type="number"]:focus {
     transition: var(--transition-fast);
 }
 
-.thumb-img:hover {
+.selectedThumb {
     border-bottom-color: var(--color-black);
 }
 
@@ -260,6 +260,10 @@ input[type="number"]:focus {
 
 .pointer {
     cursor: pointer;
+}
+
+.breadcrumb-item.active {
+    color: var(--color-gray);
 }
 
 

@@ -7,7 +7,10 @@ namespace IronFuel.Web.Core.Mapping
         public MappingProfile()
         {
             // Products
-            CreateMap<Product, ProductViewModel>();
+            CreateMap<ProductImage, ProductImageViewModel>();
+            CreateMap<Product, ProductViewModel>()
+                .ForMember(d => d.Images, opt => opt.MapFrom(s =>
+                    s.Images.OrderBy(i => i.SortOrder).ThenBy(i => i.Id).ToList()));
 
 
             CreateMap<Flavour, SelectListItem>()

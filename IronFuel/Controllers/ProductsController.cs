@@ -54,6 +54,7 @@ namespace IronFuel.Web.Controllers
             var product = _context.Products
                     .Include(p => p.Brand)
                     .Include(p => p.Category)
+                    .Include(p => p.Images)
                     .Include(p => p.Variants)
                     .ThenInclude(v => v.Flavour)
                     .SingleOrDefault(p => p.Id == id);
@@ -103,7 +104,9 @@ namespace IronFuel.Web.Controllers
                     .ToList();
 
                 var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(60))
+                    .SetAbsoluteExpiration(TimeSpan.FromSeconds(3600))
+                    .SetPriority(CacheItemPriority.Normal);
 
                 _cache.Set(cacheKey, products, cacheOptions);
             }
