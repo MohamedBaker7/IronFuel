@@ -1,7 +1,41 @@
 ﻿<div>
     <ul class="navbar-nav flex-grow-1 text-uppercase">
-        <li class="nav-item dropdown desktop-nav">
-            <a class="nav-link dropdown-toggle text-light" asp-controller="Products" asp-action="Index">
+        <li class="nav-item me-2 dropdown desktop-nav">
+            <a class="nav-link dropdown-toggle text-light" href="#">Manage</a>
+            <ul class="dropdown-menu bg-black rounded-0">
+                <li class="mt-2">
+                    <a class="dropdown-item fw-bold bg-black" asp-area="Admin" asp-controller="Products" asp-action="Index">
+                        <div class="swap w-fit">
+                            Products
+                        </div>
+                    </a>
+                </li>
+                <li class="mt-2">
+                    <a class="dropdown-item fw-bold bg-black" asp-area="Admin" asp-controller="Categories" asp-action="Index">
+                        <div class="swap w-fit">
+                            Categories
+                        </div>
+                    </a>
+                </li>
+                <li class="mt-2">
+                    <a class="dropdown-item fw-bold bg-black" asp-area="Admin" asp-controller="Brands" asp-action="Index">
+                        <div class="swap w-fit">
+                            Brands
+                        </div>
+                    </a>
+                </li>
+                <li class="mt-2">
+                    <a class="dropdown-item fw-bold bg-black" asp-area="Admin" asp-controller="Flavors" asp-action="Index">
+                        <div class="swap w-fit">
+                            Flavors
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="nav-item me-2 dropdown desktop-nav">
+            <a class="nav-link dropdown-toggle text-light" asp-area="" asp-controller="Products" asp-action="Index">
                 Shop
                 <span class="svg-icon svg-icon-muted svg-icon">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -9,10 +43,9 @@
                     </svg>
                 </span>
             </a>
-
             <ul class="dropdown-menu bg-black rounded-0">
                 @await Component.InvokeAsync("CategoryMenu")
             </ul>
-        </li>
+        </li>     
     </ul>
 </div>

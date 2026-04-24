@@ -3,7 +3,7 @@
     --color-white: #fff;
     --color-gray-light: #f1f1f1;
     --color-gray: #d5d5d5;
-    --color-gray-dark: #383838;
+    --color-gray-middark: #918f8f;
     --color-text-muted: #c5c5c5;
     --max-width: 1300px;
     --transition-fast: 0.3s;
@@ -33,6 +33,10 @@ body {
     font-family: "Outfit", sans-serif;
     font-style: normal;
     padding-top: 130px;
+}
+
+body * {
+    box-shadow: none !important;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -83,36 +87,36 @@ body {
 
 .swap {
     position: relative;
-    color: var(--color-text-muted);
+    color: var(--color-gray-middark);
     font-weight: 700;
 }
 
-.swap:hover {
-    color: var(--color-white) !important;
-}
+    .swap:hover {
+        color: var(--color-white) !important;
+    }
 
-.swap::after {
-    position: absolute;
-    content: "";
-    display: block;
-    width: 100%;
-    height: 1px;
-    background: var(--color-white);
-    bottom: 0;
-    left: 0;
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform .3s;
-}
+    .swap::after {
+        position: absolute;
+        content: "";
+        display: block;
+        width: 100%;
+        height: 1px;
+        background: var(--color-white);
+        bottom: 0;
+        left: 0;
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform .3s;
+    }
 
-.swap:hover::after {
-    transform: scaleX(1);
-}
+    .swap:hover::after {
+        transform: scaleX(1);
+    }
 
-.swap:focus {
-    background-color: var(--color-black);
-    color: gray;
-}
+    .swap:focus {
+        background-color: var(--color-black);
+        color: gray;
+    }
 
 .w-fit {
     width: fit-content;
@@ -133,10 +137,10 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
-input[type="number"]:focus {
-    border-color: var(--color-black);
-    box-shadow: 0 0 0 1px var(--color-black);
-}
+    input[type="number"]:focus {
+        border-color: var(--color-black);
+        box-shadow: 0 0 0 1px var(--color-black);
+    }
 
 .switch {
     cursor: pointer;
@@ -205,22 +209,22 @@ input[type="number"]:focus {
     border: none;
 }
 
-.form-check-input:checked {
-    background-color: var(--color-black);
-    border-color: none;
-}
+    .form-check-input:checked {
+        background-color: var(--color-black);
+        border-color: none;
+    }
 
 .form-select {
     cursor: pointer;
 }
 
-.form-select:focus {
-    border-color: var(--color-black);
-}
+    .form-select:focus {
+        border-color: var(--color-black);
+    }
 
-.form-select option {
-    color: var(--color-black);
-}
+    .form-select option {
+        color: var(--color-black);
+    }
 
 .filter-btn {
     width: fit-content;
@@ -229,7 +233,6 @@ input[type="number"]:focus {
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-
 }
 
 #mobileFilter {
@@ -240,6 +243,15 @@ input[type="number"]:focus {
     .filters-sidebar {
         display: none;
     }
+
+    .gallery-wrapper {
+        display: flex;
+        justify-content: center;
+    }
+
+    .thumbnails {
+        display: none;
+    }
 }
 
 @media (min-width: 992px) {
@@ -247,6 +259,8 @@ input[type="number"]:focus {
         position: sticky;
         top: 135px;
     }
+
+
 }
 
 .offcanvas .nav-link {
@@ -265,6 +279,65 @@ input[type="number"]:focus {
 .breadcrumb-item.active {
     color: var(--color-gray);
 }
+
+.dots-container {
+    cursor: pointer;
+}
+
+.bi-dot {
+    color: #ccc;
+    cursor: pointer;
+}
+
+.bi-dot.active {
+    color: black;
+}
+
+.modal-content {
+    border-radius: 0;
+}
+
+.modal-content .bootbox-close-button {
+    box-shadow: none;
+}
+
+#toast-container > div {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+}
+
+.toast-success {
+    background-color: var(--color-black);
+}
+
+/*Override Datatable sort buttons*/
+
+table.dataTable thead .sorting::before,
+table.dataTable thead .sorting::after,
+table.dataTable thead .sorting_asc::before,
+table.dataTable thead .sorting_asc::after,
+table.dataTable thead .sorting_desc::before,
+table.dataTable thead .sorting_desc::after {
+    display: none;
+}
+
+/*Override Pagination buttons*/
+.active > .page-link, .page-link.active {
+    background-color: var(--color-black);
+    border-color: var(--color-white);
+}
+
+.page-link:hover {
+    background-color: var(--color-gray);
+    border-color: var(--color-gray);
+    color: var(--color-black);
+}
+
+.page-link {
+    color: var(--color-black);
+}
+
 
 
 /*End Override*/

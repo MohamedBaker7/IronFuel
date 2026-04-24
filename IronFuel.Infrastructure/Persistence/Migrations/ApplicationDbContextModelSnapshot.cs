@@ -156,7 +156,10 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("LastUpdatedById");
 
-                    b.ToTable("Brands");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Brands", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.Category", b =>
@@ -197,7 +200,10 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("LastUpdatedById");
 
-                    b.ToTable("Categories");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.Flavour", b =>
@@ -238,7 +244,10 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("LastUpdatedById");
 
-                    b.ToTable("Flavors");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Flavors", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.Product", b =>
@@ -248,6 +257,9 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Benefits")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("BrandId")
                         .HasColumnType("int");
@@ -283,6 +295,9 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("SuggestedUse")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BrandId");
@@ -293,7 +308,10 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("LastUpdatedById");
 
-                    b.ToTable("Products");
+                    b.HasIndex("Name", "BrandId")
+                        .IsUnique();
+
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.ProductImage", b =>
@@ -319,7 +337,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.ProductVariant", b =>
@@ -353,18 +371,24 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                         .HasDefaultValueSql("NULL");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("ServingWeight")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("ServingSizeG")
+                        .HasColumnType("int");
 
-                    b.Property<decimal>("Size")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("ServingsPerContainer")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("int")
+                        .HasComputedColumnSql("(WeightG / NULLIF(ServingSizeG, 0))", true);
 
-                    b.Property<int>("StockQuantity")
+                    b.Property<int>("Stock")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WeightG")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -375,10 +399,10 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("LastUpdatedById");
 
-                    b.HasIndex("ProductId", "FlavourId", "Size")
+                    b.HasIndex("ProductId", "FlavourId", "WeightG")
                         .IsUnique();
 
-                    b.ToTable("ProductVariants");
+                    b.ToTable("ProductVariants", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

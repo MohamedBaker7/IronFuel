@@ -30,18 +30,32 @@
 
             modelBuilder.Entity<Brand>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Brand>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
+            modelBuilder.Entity<Brand>().HasIndex(b => b.Name).IsUnique();
 
             modelBuilder.Entity<Category>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Category>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
+            modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
 
             modelBuilder.Entity<Product>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Product>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
+            modelBuilder.Entity<Product>().HasIndex(p => new { p.Name, p.BrandId }).IsUnique();
+
 
             modelBuilder.Entity<ProductVariant>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<ProductVariant>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
+            modelBuilder.Entity<ProductVariant>().HasIndex(pv => new {pv.ProductId, pv.FlavourId, pv.WeightG}).IsUnique();
+            modelBuilder.Entity<ProductVariant>()
+                .Property(a => a.ServingsPerContainer)
+                .HasComputedColumnSql("(WeightG / NULLIF(ServingSizeG, 0))", stored: true);
+            modelBuilder.Entity<ProductVariant>().Property(p => p.Price).HasPrecision(18, 2);
+
+
 
             modelBuilder.Entity<Flavour>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Flavour>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
+            modelBuilder.Entity<Flavour>().HasIndex(f => f.Name).IsUnique();
+
+
 
             ConfigureUserAudit<Brand>(modelBuilder);
             ConfigureUserAudit<Category>(modelBuilder);

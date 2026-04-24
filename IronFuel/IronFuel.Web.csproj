@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>aspnet-IronFuel-fb76e007-0e3c-425e-bf8f-ebfc02620caf</UserSecretsId>
+		<NoWarn>NU1901</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,11 +19,18 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="10.0.2" />
+		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.7.2" />
+		<PackageReference Include="UoN.ExpressiveAnnotations.NetCore" Version="1.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\IronFuel.Application\IronFuel.Application.csproj" />
 	  <ProjectReference Include="..\IronFuel.Infrastructure\IronFuel.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Areas\Admin\Views\Brands\" />
+	  <Folder Include="wwwroot\Images\product\preworkout\" />
 	</ItemGroup>
 
 </Project>

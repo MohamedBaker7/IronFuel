@@ -2,5 +2,6 @@
   <Project Path="IronFuel.Application/IronFuel.Application.csproj" Id="cdd7edc7-90c6-4335-be9e-877adcb9e0f7" />
   <Project Path="IronFuel.Domain/IronFuel.Domain.csproj" Id="9a3f12cc-0ac2-4ec7-8970-0a91ee08d1d5" />
   <Project Path="IronFuel.Infrastructure/IronFuel.Infrastructure.csproj" Id="c66ea90f-1c82-4b31-8f80-3488fb7027a0" />
+  <Project Path="IronFuel.Web.Test/IronFuel.Web.Test.csproj" Id="3440bfc9-e7b1-4db9-8bee-f577688dae6e" />
   <Project Path="IronFuel/IronFuel.Web.csproj" />
 </Solution>

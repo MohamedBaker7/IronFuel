@@ -21,6 +21,58 @@
         "js/select2.min.js",
         "css/select2.min.css"
       ]
+    },
+    {
+      "library": "datatables@1.10.21",
+      "destination": "wwwroot/lib/datatables/",
+      "files": [
+        "js/jquery.dataTables.min.js",
+        "css/dataTables.bootstrap4.min.css",
+        "css/dataTables.bootstrap4.css",
+        "images/sort_asc.png",
+        "images/sort_asc_disabled.png",
+        "images/sort_both.png",
+        "images/sort_desc.png",
+        "images/sort_desc_disabled.png",
+        "js/dataTables.bootstrap4.js",
+        "js/dataTables.bootstrap4.min.js"
+      ]
+    },
+    {
+      "library": "bootbox.js@6.0.4",
+      "destination": "wwwroot/lib/bootbox.js/",
+      "files": [
+        "bootbox.min.js"
+      ]
+    },
+    {
+      "library": "toastr.js@2.1.4",
+      "destination": "wwwroot/lib/toastr.js/",
+      "files": [
+        "toastr.min.js",
+        "toastr.min.css"
+      ]
+    },
+    {
+      "library": "animate.css@4.1.1",
+      "destination": "wwwroot/lib/animate.css/",
+      "files": [
+        "animate.min.css"
+      ]
+    },
+    {
+      "library": "expressive-annotations-validate@2.7.0",
+      "destination": "wwwroot/lib/expressive-annotations-validate/",
+      "files": [
+        "expressive.annotations.validate.min.js"
+      ]
+    },
+    {
+      "library": "jquery-ajax-unobtrusive@3.2.6",
+      "destination": "wwwroot/lib/jquery-ajax-unobtrusive/",
+      "files": [
+        "jquery.unobtrusive-ajax.min.js"
+      ]
     }
   ]
 }

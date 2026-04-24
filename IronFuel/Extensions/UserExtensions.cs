@@ -3,9 +3,9 @@
     public static class UserExtensions
     {
         public static string GetUserId(this ClaimsPrincipal user) =>
-            user.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            user.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
         public static string GetUsername(this ClaimsPrincipal user) =>
-             user.FindFirst(ClaimTypes.Name)!.Value;
+             user.FindFirstValue(ClaimTypes.Name)!;
     }
 }

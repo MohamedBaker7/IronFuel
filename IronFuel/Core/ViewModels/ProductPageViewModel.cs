@@ -1,6 +1,6 @@
 namespace IronFuel.Web.Core.ViewModels
 {
-    public class ProductPageViewModel
+    public class ProductsPageViewModel
     {
         public int? CategoryId { get; set; }
         public string? CategoryName { get; set; }

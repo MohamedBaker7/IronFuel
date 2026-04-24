@@ -5,7 +5,7 @@
 {
     <div class="card col mt-4 rounded-0 border-0 product-card">
         <div class="card-body pb-4 fw-semibold fs-5">
-            <a class="product-link mb-3 d-block" asp-action="Details" asp-route-id="@product.Id" style="background-image: url('/Images/gold-standard-100-whey-protein.png');">
+            <a class="product-link mb-3 d-block" asp-action="Details" asp-route-id="@product.Id" style="background-image: url(@(product.PrimaryImage));">
             </a>
             <div class="fs-5 fw-bold">@product.Name</div>
             <div class="mb-2 fs-6 text-muted">Rating</div>

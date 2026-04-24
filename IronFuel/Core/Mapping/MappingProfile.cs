@@ -18,9 +18,15 @@ namespace IronFuel.Web.Core.Mapping
                 .ForMember(dest => dest.Value, opt => opt.MapFrom(src => src.Id));
 
             // Brands
-            CreateMap<Brand, BrandViewModel>();
+            CreateMap<Brand, BrandViewModel>().ReverseMap();
+            CreateMap<Brand, BrandFormViewModel>().ReverseMap();
+
+            // Flavors
+            CreateMap<Flavour, FlavorViewModel>().ReverseMap();
+            CreateMap<Flavour, FlavorFormViewModel>().ReverseMap();
             // Categories
-            CreateMap<Category, CategoryViewModel>();
+            CreateMap<Category, CategoryViewModel>().ReverseMap();
+            CreateMap<Category, CategoryFormViewModel>().ReverseMap();
             CreateMap<Category, CategoryNavViewModel>();
             // Variants
             CreateMap<ProductVariant, ProductVariantViewModel>();

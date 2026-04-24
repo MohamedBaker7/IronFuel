@@ -22,22 +22,22 @@
 </div>
 
 <div class="row mt-5 ms-lg-1">
-    <div class="col">
-        <div class="row">
-            <div class="thumbnails col-2 thumbs-wrapper">
+    <div class="col-lg">
+        <div class="row gallery-wrapper">
+            <div class="thumbnails col-lg-2 thumbs-wrapper">
                 @if (gallery != null)
                 {
                     foreach (var img in gallery)
                     {
                         var thumbSrc = Url.Content("~/" + img.RelativePath.TrimStart('/'));
-                        <div class="d-flex justify-content-center mb-2">
+                        <div class="mb-2">
                             <img src="@thumbSrc" class="thumb-img" alt="" role="button" />
                         </div>
                     }
                 }
                 else
                 {
-                    <div class="d-flex justify-content-center mb-2">
+                    <div class="mb-2">
                         <img src="@placeholder" class="thumb-img" alt="" role="button" />
                     </div>
                 }
@@ -45,16 +45,76 @@
             <div class="main-image mt-3 col-10">
                 <img id="mainProductImage" src="@mainSrc" class="img-fluid" alt="@Model.Name" />
             </div>
+            <div class="dots-container text-center mt-2 d-lg-none">
+                @if (gallery != null)
+                {
+                    int index = 0;
+                    foreach (var img in gallery)
+                    {
+                        var src = Url.Content("~/" + img.RelativePath.TrimStart('/'));
+                            <i class="bi bi-dot fs-1" data-src="@src" data-index="@index"></i>
+                        index++;
+                    }
+                }
+            </div>
         </div>
+        <hr />
+        <div class="row ms-1">
+            <nav class="navbar navbar-light p-0">
+                <div class="container-fluid d-flex justify-content-between p-0 pointer" data-bs-toggle="collapse" data-bs-target="#Benefits" aria-controls="Benefits" aria-expanded="false" aria-label="Toggle navigation">
+                    <label class="form-check-label me-3 pointer fw-bold fs-5">
+                        Benefits
+                    </label>
+                    <button class="navbar-toggler border-0 p-0 rounded-5 expand shadow-none" type="button">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </nav>
+            <div class="collapse" id="Benefits" data-bs-theme="light">
+                <span class="fst-italic">
+                    @Html.Raw(Model.Benefits?.Replace("\\n", "<br />"))
+                </span>
+            </div>
         </div>
-    <div class="col-5 offset-1">
+        <hr />
+        <div class="row ms-1">
+            <nav class="navbar navbar-light p-0">
+                <div class="container-fluid d-flex justify-content-between p-0 pointer" data-bs-toggle="collapse" data-bs-target="#SuggestedUse" aria-controls="SuggestedUse" aria-expanded="false" aria-label="Toggle navigation">
+                    <label class="form-check-label me-3 pointer fw-bold fs-5">
+                        Suggested Use
+                    </label>
+                    <button class="navbar-toggler border-0 p-0 rounded-5 expand shadow-none" type="button">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </nav>
+            <div class="collapse" id="SuggestedUse" data-bs-theme="light">
+                <span class="fst-italic">
+                    @Html.Raw(Model.SuggestedUse?.Replace("\\n", "<br />"))
+                </span>
+            </div>
+        </div>
+        <hr />
+    </div>
+
+    <div class="col-lg-5 offset-lg-1">
         <h1 class="fw-bold mt-3">@Model.Name</h1>
-        <p class="fs-5 py-3 text-muted">@Model.Description</p>
+        <h4 class="fw-semibold mt-3">@Model.Brand!.Name</h4>
+        <hr />
+        <p class="fs-5 py-3">@Html.Raw(Model.Description.Replace("\\n", "<br />"))</p>
         <hr />
         <div class="row">
             <div class="col mb-3">
                 <div class="mb-2">
-                    <label class="mb-2 text-muted fw-semibold" asp-for="SelectedFlavour">
+                    <label class="mb-2 text-muted fw-semibold" for="Flavors">
                         Flavour:
                     </label>
                     <select id="Flavors" class="form-select form-select-solid rounded-0 p-3 ps-5 shadow-none text-uppercase" asp-for="SelectedFlavour" asp-items="Model.Flavors">
@@ -65,7 +125,7 @@
         <div class="row">
             <div class="col mb-3">
                 <div class="mb-2">
-                    <label class="mb-2 text-muted fw-semibold" asp-for="SelectedSizes">
+                    <label class="mb-2 text-muted fw-semibold" for="Sizes">
                         Sizes:
                     </label>
                     <select id="Sizes" class="form-select form-select-solid rounded-0 p-3 ps-5 shadow-none text-uppercase" asp-for="SelectedSizes" asp-items="Model.Sizes">
@@ -73,6 +133,19 @@
                 </div>
             </div>
         </div>
+        <div class="row">
+            <span id="Price" class="text-uppercase mt-5 fs-4 fw-bold"></span>
+        </div>
+        <div class="row">
+            <span id="ServingsPerContainer"></span>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <video controls width="600">
+            <source src="~/videos/creatine-video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </div>
 </div>
 

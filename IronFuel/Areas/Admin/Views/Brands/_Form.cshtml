@@ -1,0 +1,23 @@
+@model BrandFormViewModel
+
+<form class="js-form" asp-action="@(Model?.Id > 0 ? "Edit" : "Create")"
+      data-ajax-method="post"
+      data-ajax="true"
+      data-ajax-begin="onModelBegin"
+      data-ajax-success="onModalSuccess"
+      data-ajax-failure="showErrorMessage"
+      data-ajax-complete="onModelComplete">
+    <div>
+        <div>
+            <div class="form-floating mb-2">
+                @if (Model?.Id > 0)
+                {
+                    <input type="hidden" asp-for="Id" />
+                }
+                <input type="text" class="form-control form-control-solid rounded-0 border-black" placeholder="" asp-for="Name" autocomplete="off" />
+                <label asp-for="Name"></label>
+            </div>
+        </div>
+        <span asp-validation-for="Name" class="text-danger d-block"></span>
+    </div>
+</form>

@@ -1,0 +1,28 @@
+@model ProductEditorViewModel
+@{
+    ViewData["Title"] = "Add product";
+}
+
+<div class="mt-5 pt-3 ms-4 me-4 mb-5" style="max-width: 48rem;">
+    <h1 class="h3 mb-4">Add product</h1>
+
+    <form asp-area="Admin" asp-controller="Products" asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
+        <partial name="~/Views/Products/_ProductForm.cshtml" model="Model" />
+        <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-dark rounded-0 btn-save">
+                <span class="indicator-label">
+                    Save
+                </span>
+                <span class="indicator-progress d-none">
+                    Saving...<span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+                
+            </button>
+            <a class="btn btn-outline-secondary rounded-0" asp-area="Admin" asp-controller="Products" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

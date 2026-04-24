@@ -1,0 +1,257 @@
+@model ProductEditorViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control rounded-0" autocomplete="off" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-6">
+        <label asp-for="CategoryId" class="form-label"></label>
+        <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="form-select rounded-0">
+            <option value="">— Select category —</option>
+        </select>
+        <span asp-validation-for="CategoryId" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="BrandId" class="form-label"></label>
+        <select asp-for="BrandId" asp-items="Model.BrandOptions" class="form-select rounded-0">
+            <option value="">— Select brand —</option>
+        </select>
+        <span asp-validation-for="BrandId" class="text-danger"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Description" class="form-label"></label>
+    <textarea asp-for="Description" class="form-control rounded-0" rows="5"></textarea>
+    <span asp-validation-for="Description" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Benefits" class="form-label"></label>
+    <textarea asp-for="Benefits" class="form-control rounded-0" rows="3"></textarea>
+    <span asp-validation-for="Benefits" class="text-danger"></span>
+</div>
+
+<div class="mb-3">
+    <label asp-for="SuggestedUse" class="form-label"></label>
+    <textarea asp-for="SuggestedUse" class="form-control rounded-0" rows="3"></textarea>
+    <span asp-validation-for="SuggestedUse" class="text-danger"></span>
+</div>
+
+<div class="border rounded-0 p-3 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 mb-0">Variants</h2>
+        <div>
+            <a class="btn btn-light btn-sm rounded-0" asp-area="Admin" asp-controller="Flavors" asp-action="Index">New flavour</a>
+            <button id="add-variant-btn" type="button" class="btn btn-outline-dark btn-sm rounded-0">Add variant</button>
+        </div>
+    </div>
+    <span asp-validation-for="Variants" class="text-danger d-block mb-2"></span>
+    <div id="variants-container" class="d-flex flex-column gap-3">
+        @for (var i = 0; i < Model.Variants.Count; i++)
+        {
+            <div class="variant-row border rounded-0 p-3">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label asp-for="Variants[i].FlavourId" class="form-label"></label>
+                        <select asp-for="Variants[i].FlavourId" asp-items="Model.FlavourOptions" class="form-select rounded-0">
+                            <option value="">- Select flavour -</option>
+                        </select>
+                        <span asp-validation-for="Variants[i].FlavourId" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Variants[i].WeightG" class="form-label"></label>
+                        <input asp-for="Variants[i].WeightG" class="form-control rounded-0" placeholder="0" />
+                        <span asp-validation-for="Variants[i].WeightG" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Variants[i].ServingSizeG" class="form-label"></label>
+                        <input asp-for="Variants[i].ServingSizeG" class="form-control rounded-0" placeholder="0" />
+                        <span asp-validation-for="Variants[i].ServingSizeG" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Variants[i].Price" class="form-label"></label>
+                        <input asp-for="Variants[i].Price" class="form-control rounded-0" placeholder="0.00" />
+                        <span asp-validation-for="Variants[i].Price" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4">
+                        <label asp-for="Variants[i].Stock" class="form-label"></label>
+                        <input asp-for="Variants[i].Stock" class="form-control rounded-0" placeholder="0" />
+                        <span asp-validation-for="Variants[i].Stock" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end justify-content-end">
+                        <button type="button" class="btn btn-outline-danger rounded-0 remove-variant-btn">Remove</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mb-4">
+    <input asp-for="RemovedImageIds" type="hidden" />
+    <input asp-for="ExistingImageOrder" type="hidden" />
+    <label asp-for="GalleryImages" class="form-label"></label>
+    <input asp-for="GalleryImages" type="file" class="form-control rounded-0" accept=".jpg,.jpeg,.png,.webp" multiple />
+    <span asp-validation-for="GalleryImages" class="text-danger"></span>
+    <small class="form-text text-muted">You can upload multiple images. The first file becomes the primary image.</small>
+</div>
+
+@if (Model.ExistingImages.Count > 0)
+{
+    <div class="mb-4">
+        <label class="form-label">Existing gallery</label>
+        <div id="existing-images-list" class="d-flex flex-column gap-2">
+            @foreach (var image in Model.ExistingImages.OrderBy(i => i.SortOrder).ThenBy(i => i.Id))
+            {
+                <div class="d-flex align-items-center gap-2 border p-2 existing-image-item" data-image-id="@image.Id">
+                    <img src="@Url.Content("~/" + image.RelativePath.TrimStart('/'))" alt="" style="width:72px;height:72px;object-fit:cover;" />
+                    <code class="small text-muted flex-grow-1 w-25">@image.RelativePath</code>
+                    <button type="button" class="btn btn-outline-secondary btn-sm js-image-up">Up</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm js-image-down">Down</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm js-image-remove">Remove</button>
+                </div>
+            }
+        </div>
+        <small class="form-text text-muted">Reorder images and remove the ones you do not want to keep.</small>
+    </div>
+}
+
+<template id="variant-template">
+    <div class="variant-row border rounded p-3">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label" data-variant-label="FlavourId">Flavour</label>
+                <select class="form-select rounded-0" data-variant-field="FlavourId">
+                    <option value="">- Select flavour -</option>
+                    @foreach (var flavour in Model.FlavourOptions)
+                    {
+                        <option value="@flavour.Value">@flavour.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" data-variant-label="WeightG">Weight (g)</label>
+                <input type="number" class="form-control rounded-0" data-variant-field="WeightG" min="1" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" data-variant-label="ServingSizeG">Serving size (g)</label>
+                <input type="number" class="form-control rounded-0" data-variant-field="ServingSizeG" min="1" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" data-variant-label="Price">Price</label>
+                <input type="number" class="form-control rounded-0" data-variant-field="Price" step="0.01" min="0.01" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" data-variant-label="Stock">Stock</label>
+                <input type="number" class="form-control rounded-0" data-variant-field="Stock" min="0" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end justify-content-end">
+                <button type="button" class="btn btn-outline-danger rounded-0 remove-variant-btn">Remove</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    (() => {
+        const container = document.getElementById("variants-container");
+        const addButton = document.getElementById("add-variant-btn");
+        const template = document.getElementById("variant-template");
+
+        if (!container || !addButton || !template) {
+            return;
+        }
+
+        const reindexVariantRows = () => {
+            const rows = container.querySelectorAll(".variant-row");
+
+            rows.forEach((row, index) => {
+                row.querySelectorAll("[data-variant-field]").forEach((field) => {
+                    const fieldName = field.getAttribute("data-variant-field");
+                    field.name = `Variants[${index}].${fieldName}`;
+                    field.id = `Variants_${index}__${fieldName}`;
+                });
+            });
+        };
+
+        addButton.addEventListener("click", () => {
+            const fragment = template.content.cloneNode(true);
+            container.appendChild(fragment);
+            reindexVariantRows();
+        });
+
+        container.addEventListener("click", (event) => {
+            const button = event.target.closest(".remove-variant-btn");
+            if (!button) {
+                return;
+            }
+
+            const rows = container.querySelectorAll(".variant-row");
+            if (rows.length === 1) {
+                return;
+            }
+
+            button.closest(".variant-row")?.remove();
+            reindexVariantRows();
+        });
+
+        const existingImagesContainer = document.getElementById("existing-images-list");
+        const removedImageIdsInput = document.getElementById("RemovedImageIds");
+        const existingOrderInput = document.getElementById("ExistingImageOrder");
+        const removedIds = new Set();
+
+        const syncImageState = () => {
+            if (!existingImagesContainer || !removedImageIdsInput || !existingOrderInput) {
+                return;
+            }
+
+            const orderedIds = [...existingImagesContainer.querySelectorAll(".existing-image-item")]
+                .map((item) => item.getAttribute("data-image-id"))
+                .filter((id) => id);
+
+            existingOrderInput.value = orderedIds.join(",");
+            removedImageIdsInput.value = [...removedIds].join(",");
+        };
+
+        if (existingImagesContainer) {
+            existingImagesContainer.addEventListener("click", (event) => {
+                const item = event.target.closest(".existing-image-item");
+                if (!item) {
+                    return;
+                }
+
+                if (event.target.closest(".js-image-remove")) {
+                    removedIds.add(item.getAttribute("data-image-id"));
+                    item.remove();
+                    syncImageState();
+                    return;
+                }
+
+                if (event.target.closest(".js-image-up")) {
+                    const prev = item.previousElementSibling;
+                    if (prev) {
+                        existingImagesContainer.insertBefore(item, prev);
+                        syncImageState();
+                    }
+                    return;
+                }
+
+                if (event.target.closest(".js-image-down")) {
+                    const next = item.nextElementSibling;
+                    if (next) {
+                        existingImagesContainer.insertBefore(next, item);
+                        syncImageState();
+                    }
+                }
+            });
+
+            syncImageState();
+        }
+    })();
+</script>

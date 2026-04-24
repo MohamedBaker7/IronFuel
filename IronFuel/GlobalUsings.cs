@@ -13,6 +13,8 @@ global using Microsoft.EntityFrameworkCore;
 global using Microsoft.Extensions.Caching.Memory;
 global using System.Diagnostics;
 global using System.Security.Claims;
+global using IronFuel.Domain.Consts;
+global using IronFuel.Domain.Enums;
 
 
 
