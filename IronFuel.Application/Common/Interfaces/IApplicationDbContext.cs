@@ -11,7 +11,8 @@ namespace IronFuel.Application.Common.Interfaces
         public DbSet<ProductVariant> ProductVariants { get; set; }
         public DbSet<Flavour> Flavors { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
-        public int SaveChanges();
+        int SaveChanges();
 
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

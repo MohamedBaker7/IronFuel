@@ -1,3 +1,4 @@
+using IronFuel.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq.Dynamic.Core;
 
@@ -14,12 +15,12 @@ namespace IronFuel.Web.Services
             (6m, 12m)
         };
 
-        private readonly ApplicationDbContext _context;
+        private readonly IApplicationDbContext _context;
         private readonly IMemoryCache _cache;
         private readonly IMapper _mapper;
         private readonly IImageService _imageService;
 
-        public ProductService(ApplicationDbContext context, IMemoryCache cache, IMapper mapper, IImageService imageService)
+        public ProductService(IApplicationDbContext context, IMemoryCache cache, IMapper mapper, IImageService imageService)
         {
             _context = context;
             _cache = cache;
