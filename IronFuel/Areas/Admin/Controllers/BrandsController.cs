@@ -1,8 +1,10 @@
 using IronFuel.Web.Services;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace IronFuel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [EnableRateLimiting("fixed")]
     public class BrandsController : Controller
     {
         private readonly IBrandService _brandService;

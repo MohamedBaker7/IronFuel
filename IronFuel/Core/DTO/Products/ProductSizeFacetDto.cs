@@ -1,4 +1,4 @@
-namespace IronFuel.Application.DTO.Products
+namespace IronFuel.Web.Core.DTO.Products
 {
     public class ProductSizeFacetDto
     {

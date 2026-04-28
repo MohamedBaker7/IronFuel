@@ -1,6 +1,8 @@
 ﻿@model ProductsPageViewModel
 
-<form class="filter-form">
+@* <div id="activeFiltersBar" class="d-flex flex-wrap gap-2 mb-2"></div> *@
+
+<form class="filter-form" method="post">
     <div class="ms-3 filter-container">
         <div class="fw-semibold">
             <i class="bi bi-filter me-1"></i>
@@ -60,10 +62,11 @@
                 @foreach (var flavour in Model.Flavours)
                 {
                     <div class="form-check">
-                        <input class="form-check-input js-falvour js-filter shadow-none" type="checkbox" value="@flavour.Flavour" name="flavors">
-                        @* We will add attr disabled with in array condition to be sure this flavour was sent in this array *@
-                        <label class="form-check-label text-muted fw-semibold fs-6">
-                            @($"{flavour.Flavour} ({flavour.Count})")
+                        <input class="form-check-input js-falvour js-filter shadow-none" type="checkbox" 
+                        value="@flavour.Flavour" name="flavors_@(flavour.Flavour)">
+                        <label class="form-check-label text-muted fw-semibold fs-6"
+                               data-flavor="@flavour.Flavour">
+                            @flavour.Flavour (<span class="flavor-count">@flavour.Count</span>)
                         </label>
                     </div>
                 }
@@ -85,9 +88,11 @@
                 @foreach (var item in Model.Sizes)
                 {
                     <div class="form-check">
-                        <input class="form-check-input js-size js-filter shadow-none" type="checkbox" value="@($"{item.Min}-{item.Max}")" name="sizes">
-                        <label class="form-check-label text-muted fw-semibold fs-6">
-                            @($"{item.Label} Kg ({item.Count})")
+                        <input class="form-check-input js-size js-filter shadow-none" type="checkbox" 
+                        value="@($"{item.Min}-{item.Max}")" name="sizes">
+                        <label class="form-check-label text-muted fw-semibold fs-6"
+                               data-size="@($"{item.Min}-{item.Max}")">
+                            @item.Label Kg (<span class="size-count">@item.Count</span>)
                         </label>
                     </div>
                 }
@@ -101,3 +106,6 @@
         </div>
     </div>
 </form>
+
+
+@Html.AntiForgeryToken()

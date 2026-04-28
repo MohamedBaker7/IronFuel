@@ -2,6 +2,8 @@
     --color-black: #000;
     --color-white: #fff;
     --color-gray-light: #f1f1f1;
+    --color-gray-dark: #484848;
+    --color-gray-background: rgba(242, 242, 242,1);
     --color-gray: #d5d5d5;
     --color-gray-middark: #918f8f;
     --color-text-muted: #c5c5c5;
@@ -33,11 +35,12 @@ body {
     font-family: "Outfit", sans-serif;
     font-style: normal;
     padding-top: 130px;
+
 }
 
-body * {
-    box-shadow: none !important;
-}
+    body * {
+        box-shadow: none !important;
+    }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
     color: var(--bs-secondary-color);
@@ -91,35 +94,167 @@ body * {
     font-weight: 700;
 }
 
-    .swap:hover {
-        color: var(--color-white) !important;
+.swap:hover {
+    color: var(--color-white) !important;
+}
+
+.swap::after {
+    position: absolute;
+    content: "";
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: var(--color-white);
+    bottom: 0;
+    left: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .3s;
+}
+
+.swap:hover::after {
+    transform: scaleX(1);
+}
+
+.swap:focus {
+    background-color: var(--color-black);
+    color: gray;
+}
+
+
+.swap-reverse {
+    position: relative;
+    color: var(--color-gray-dark);
+    font-weight: normal;
+}
+
+    .swap-reverse:hover {
+        color: black !important;
     }
 
-    .swap::after {
-        position: absolute;
-        content: "";
-        display: block;
-        width: 100%;
-        height: 1px;
-        background: var(--color-white);
-        bottom: 0;
-        left: 0;
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform .3s;
+.swap-reverse::after {
+    position: absolute;
+    content: "";
+    display: block;
+    width: 100%;
+    height: 1px;
+    background: black;
+    bottom: 0;
+    left: 0;
+    transform: scaleX(1);
+    transform-origin: left; 
+    transition: transform .3s;
+}
+
+.swap-reverse:hover::after {
+    transform: scaleX(0);
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-60px);
     }
 
-    .swap:hover::after {
-        transform: scaleX(1);
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.product-card-animate {
+    animation: slideInLeft 0.4s ease forwards;
+    opacity: 0;
+}
+
+.product-image-wrapper {
+    transition: background-image 0s;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#pageSpinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    gap: 1.5rem;
+    transition: opacity 0.4s ease;
+}
+
+    #pageSpinner.hide {
+        opacity: 0;
+        pointer-events: none;
     }
 
-    .swap:focus {
-        background-color: var(--color-black);
-        color: gray;
+.spinner-logo {
+    width: 120px;
+    animation: pulseLogo 1.2s ease-in-out infinite;
+}
+
+.spinner-ring {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f0f0f0;
+    border-top: 4px solid black;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes pulseLogo {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(0.95);
+    }
+}
+
+#pageContent {
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+    #pageContent.ready {
+        visibility: visible;
+        opacity: 1;
     }
 
 .w-fit {
     width: fit-content;
+}
+
+.disabled-option {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    pointer-events: none;
+}
+
+.bg-background-color {
+    background-color: var(--color-gray-background) !important;
+}
+
+.bg-gray-color {
+    background-color: var(--color-gray) !important;
 }
 
 .product-card .card-body {
@@ -146,16 +281,16 @@ input[type="number"] {
     cursor: pointer;
 }
 
-.switch:checked {
-    background-color: var(--color-black);
-    border-color: var(--color-black);
-    box-shadow: none;
-}
+    .switch:checked {
+        background-color: var(--color-black);
+        border-color: var(--color-black);
+        box-shadow: none;
+    }
 
-.switch:focus {
-    box-shadow: none;
-    background-image: url("data:image/svg+xml,%3csvg viewBox='-4 -4 8 8' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
-}
+    .switch:focus {
+        box-shadow: none;
+        background-image: url("data:image/svg+xml,%3csvg viewBox='-4 -4 8 8' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle r='3' fill='white'/%3e%3c/svg%3e");
+    }
 
 .product-link {
     width: 100%;
@@ -259,8 +394,6 @@ input[type="number"] {
         position: sticky;
         top: 135px;
     }
-
-
 }
 
 .offcanvas .nav-link {
@@ -289,17 +422,17 @@ input[type="number"] {
     cursor: pointer;
 }
 
-.bi-dot.active {
-    color: black;
-}
+    .bi-dot.active {
+        color: black;
+    }
 
 .modal-content {
     border-radius: 0;
 }
 
-.modal-content .bootbox-close-button {
-    box-shadow: none;
-}
+    .modal-content .bootbox-close-button {
+        box-shadow: none;
+    }
 
 #toast-container > div {
     border-radius: 0;
@@ -338,6 +471,10 @@ table.dataTable thead .sorting_desc::after {
     color: var(--color-black);
 }
 
+.form-check .form-check-input,
+.form-check .form-check-label {
+    cursor: pointer;
+}
 
 
 /*End Override*/

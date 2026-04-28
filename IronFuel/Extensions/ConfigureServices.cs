@@ -1,5 +1,6 @@
 ﻿using IronFuel.Web.Helpers;
 using IronFuel.Web.Services;
+using Microsoft.AspNetCore.RateLimiting;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
 
 namespace IronFuel.Web.Extensions
@@ -8,16 +9,13 @@ namespace IronFuel.Web.Extensions
     {
         public static IServiceCollection AddWebServices(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.Configure<SecurityStampValidatorOptions>(options => options.ValidationInterval = TimeSpan.Zero);
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => 
+                options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultUI()
                 .AddDefaultTokenProviders();
@@ -40,7 +38,17 @@ namespace IronFuel.Web.Extensions
             builder.Services.AddControllersWithViews()
                 .AddRazorRuntimeCompilation();
 
-    
+            builder.Services.AddMvc(option =>
+                option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+
+
+            builder.Services.AddRateLimiter(options =>
+                options.AddFixedWindowLimiter("fixed", o =>
+                {
+                    o.PermitLimit = 10;
+                    o.Window = TimeSpan.FromSeconds(10);
+                }));
+
 
             builder.Services.AddMemoryCache();
 

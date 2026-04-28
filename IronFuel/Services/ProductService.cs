@@ -35,11 +35,41 @@ namespace IronFuel.Web.Services
             return BuildProductsPageViewModel(productsModel, categoryId, categoryName);
         }
 
-        public IEnumerable<ProductViewModel> GetFilteredProducts(ProductFilterDto filter)
+        public FilterResultDto GetFilteredProducts(ProductFilterDto filter)
         {
             var products = GetProducts(filter.CategoryId);
-            var filteredProducts = ApplyFilters(products, filter);
-            return _mapper.Map<IEnumerable<ProductViewModel>>(filteredProducts);
+            var filteredProducts = ApplyFilters(products, filter).ToList();
+
+            // without flavors filter → for updating flavors
+            var withoutFlavors = ApplyFilters(products, filter with { Flavors = null }).ToList();
+
+            // without sizes filter → for updating sizes
+            var withoutSizes = ApplyFilters(products, filter with { Sizes = null }).ToList();
+         
+            var availableFlavors = withoutFlavors
+                .SelectMany(p => p.Variants)
+                .GroupBy(v => v.Flavour.Name)
+                .ToDictionary(g => g.Key, g => g.Select(v => v.ProductId).Distinct().Count());
+
+            var availableSizes = withoutSizes
+                .SelectMany(p => p.Variants)
+                .GroupBy(v =>
+                {
+                    var kg = v.WeightG / 1000m;
+                    var range = SizeRanges.FirstOrDefault(r => kg >= r.Min && kg < r.Max);
+                    return range == default ? null : $"{range.Min}-{range.Max}";
+                })
+                .Where(g => g.Key != null)
+                .ToDictionary(g => g.Key!, g => g.Select(v => v.ProductId).Distinct().Count());
+
+
+            return new FilterResultDto
+            {
+                Products = _mapper.Map<IEnumerable<ProductViewModel>>(filteredProducts),
+                AvailableFlavors = availableFlavors,
+                AvailableSizes = availableSizes,
+                TotalCount = filteredProducts.Count
+            };
         }
 
         public async Task<ProductViewModel?> GetProductDetailsAsync(int id)
@@ -584,6 +614,6 @@ namespace IronFuel.Web.Services
 
             return isAllowed;
         }
-       
+
     }
 }

@@ -1,8 +1,13 @@
 using IronFuel.Web.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.CodeAnalysis.Elfie.Extensions;
 
 namespace IronFuel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [EnableRateLimiting("fixed")]
+    [Authorize(Roles = AppRoles.Admin)]
     public class ProductsController : Controller
     {
         private readonly IProductService _productService;
@@ -39,7 +44,6 @@ namespace IronFuel.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductEditorViewModel model)
         {
             if (!ModelState.IsValid)
@@ -76,7 +80,6 @@ namespace IronFuel.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, ProductEditorViewModel model)
         {
             if (!ModelState.IsValid)
@@ -115,7 +118,6 @@ namespace IronFuel.Web.Areas.Admin.Controllers
 
         [HttpPost]
         [AjaxOnly]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleStatus(int id)
         {
             var updated = await _productService.ToggleStatusAsync(id);

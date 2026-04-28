@@ -1,8 +1,10 @@
 ﻿using IronFuel.Web.Services;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace IronFuel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [EnableRateLimiting("fixed")]
     public class CategoriesController : Controller
     {
         private readonly ICategoryService _categoryService;

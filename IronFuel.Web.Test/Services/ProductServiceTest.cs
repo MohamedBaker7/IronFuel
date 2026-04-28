@@ -1,17 +1,4 @@
-﻿using AutoMapper;
-using IronFuel.Application.Common.Interfaces;
-using IronFuel.Application.DTO.Products;
-using IronFuel.Domain.Entities;
-using IronFuel.Infrastructure.Persistence;
-using IronFuel.Web.Core.Mapping;
-using IronFuel.Web.Core.ViewModels;
-using IronFuel.Web.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging.Abstractions;
-using Moq;
-using Xunit;
-
+﻿
 namespace IronFuel.Web.Test.Services
 {
     public class ProductServiceTests
@@ -331,8 +318,8 @@ namespace IronFuel.Web.Test.Services
             var result = _sut.GetFilteredProducts(filter);
 
             // Assert
-            Assert.Single(result);
-            Assert.Equal("In Stock Product", result.First().Name);
+            Assert.Single(result.Products);
+            Assert.Equal("In Stock Product", result.Products.First().Name);
         }
         [Fact]
         public void GetFilteredProducts_WithMinPrice_ExcludesCheaperProducts()
@@ -352,8 +339,8 @@ namespace IronFuel.Web.Test.Services
             var result = _sut.GetFilteredProducts(filter);
 
             // Assert
-            Assert.Single(result);
-            Assert.Equal("Expensive Product", result.First().Name);
+            Assert.Single(result.Products);
+            Assert.Equal("Expensive Product", result.Products.First().Name);
         }
         [Fact]
         public void GetFilteredProducts_WithMaxPrice_ExcludesExpensiveProducts()
@@ -373,8 +360,8 @@ namespace IronFuel.Web.Test.Services
             var result = _sut.GetFilteredProducts(filter);
 
             // Assert
-            Assert.Single(result);
-            Assert.Equal("Cheap Product", result.First().Name);
+            Assert.Single(result.Products);
+            Assert.Equal("Cheap Product", result.Products.First().Name);
         }
         [Fact]
         public void GetFilteredProducts_WithFlavourFilter_ReturnsMatchingProducts()
@@ -395,8 +382,8 @@ namespace IronFuel.Web.Test.Services
             var result = _sut.GetFilteredProducts(filter);
 
             // Assert
-            Assert.Single(result);
-            Assert.Equal("Chocolate Whey", result.First().Name);
+            Assert.Single(result.Products);
+            Assert.Equal("Chocolate Whey", result.Products.First().Name);
         }
         [Fact]
         public void GetFilteredProducts_WithNoFilters_ReturnsAllActiveProducts()
@@ -415,7 +402,7 @@ namespace IronFuel.Web.Test.Services
             var result = _sut.GetFilteredProducts(filter);
 
             // Assert — deleted products excluded
-            Assert.Equal(2, result.Count());
+            Assert.Equal(2, result.TotalCount);
         }
 
 

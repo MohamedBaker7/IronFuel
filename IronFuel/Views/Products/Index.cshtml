@@ -16,13 +16,19 @@
     </nav>
 </div>
 
+<div id="pageSpinner" class="d-none">
+    <img src="~/assets/images/navbarlogo.png" class="spinner-logo" alt="IronFuel" />
+    <div class="spinner-ring"></div>
+</div>
+
+
 @if (Model.Products.Count() > 0)
 {
     <div class="d-flex justify-content-center">
         <div class="row container-fluid px-0 mt-5">
             <div class="">
-
-                <button class="btn btn-dark text-uppercase rounded-0 px-3 py-4 filter-btn d-lg-none shadow-none" data-bs-toggle="offcanvas" data-bs-target="#mobileFilter">
+                <button class="btn btn-dark text-uppercase rounded-0 px-3 py-4 filter-btn d-lg-none shadow-none"
+                        data-bs-toggle="offcanvas" data-bs-target="#mobileFilter">
                     <i class="bi bi-filter me-1"></i>
                     Filter and sort
                 </button>
@@ -39,26 +45,27 @@
 
             <div class="col-3 pe-5 ps-0 fs-5 fw-bold filters-sidebar">
                 <partial name="_Filters" model="Model"></partial>
+                </div>
+
+                <div class="p-lg-0 col-lg-9">
+                    <partial name="_ProductsList" model="Model"></partial>
+                    </div>
+                </div>
             </div>
-            <div class="p-lg-0 col-lg-9">
-                <partial name="_ProductsList" model="Model"></partial>
-            </div>          
-        </div>
-    </div>
-}
-else
-{
-    <div class="text-center mt-5">
-        <h3>Nothing Here Yet</h3>
-        <p class="text-muted fs-5">
-            Looks like this category is still warming up.
-            Explore other supplements and fuel your workout!
-        </p>
-    </div>
-}
+        }
+        else
+        {
+            <div class="text-center mt-5">
+                <h3>Nothing Here Yet</h3>
+                <p class="text-muted fs-5">
+                    Looks like this category is still warming up.
+                    Explore other supplements and fuel your workout!
+                </p>
+            </div>
+        }
 
 
 
-@section Scripts {
-    <script src="~/js/products.js" asp-append-version="true"></script>
-}
+        @section Scripts {
+            <script src="~/js/products.js" asp-append-version="true"></script>
+        }

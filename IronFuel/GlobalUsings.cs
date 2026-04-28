@@ -1,5 +1,5 @@
 global using AutoMapper;
-global using IronFuel.Application.DTO.Products;
+global using IronFuel.Web.Core.DTO.Products;
 global using IronFuel.Domain.Entities;
 global using IronFuel.Infrastructure;
 global using IronFuel.Infrastructure.Persistence;

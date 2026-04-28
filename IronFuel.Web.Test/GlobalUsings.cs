@@ -1,0 +1,12 @@
+﻿global using AutoMapper;
+global using IronFuel.Application.Common.Interfaces;
+global using IronFuel.Domain.Entities;
+global using IronFuel.Infrastructure.Persistence;
+global using IronFuel.Web.Core.DTO.Products;
+global using IronFuel.Web.Core.Mapping;
+global using IronFuel.Web.Core.ViewModels;
+global using IronFuel.Web.Services;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.Extensions.Caching.Memory;
+global using Microsoft.Extensions.Logging.Abstractions;
+global using Moq;

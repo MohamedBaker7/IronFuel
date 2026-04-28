@@ -6,11 +6,12 @@
 <div>
     <input id="CategoryId" type="hidden" value="@Model.CategoryId" />
     <h2 class="fw-bold mb-4">@categoryName</h2>
+    <div id="activeFiltersBar" class="d-flex flex-wrap gap-2 mb-2"></div>
     <span class="fs-5 mb-4" id="ProductsCount">
         @Model.Products.Count() products
     </span>
     <hr class="mb-0" />
-    <div class="row row-cols-2 row-cols-lg-3 mb-4 g-3" id="ProductsContainer">
+    <div class="row row-cols-2 row-cols-lg-3 mb-4 g-3" id="ProductsContainer" data-filter-url="@Url.Action("Filter", "Products", new { area = "" })">
         <partial name="_ProductsCard" model="Model.Products"></partial>
     </div>
 </div>

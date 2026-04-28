@@ -1,4 +1,5 @@
 using IronFuel.Web.Services;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxTokenParser;
 
 namespace IronFuel.Web.Controllers
 {
@@ -17,14 +18,21 @@ namespace IronFuel.Web.Controllers
             return View(model);
         }
 
-        [AjaxOnly, HttpPost]
+        [AjaxOnly,HttpPost]
         public IActionResult Filter(ProductFilterDto filter)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            var products = _productService.GetFilteredProducts(filter);
-            return PartialView("_ProductsCard", products);
+            var result = _productService.GetFilteredProducts(filter);
+
+            return Json(new
+            {
+                html = this.RenderPartialViewToString("_ProductsCard", result.Products),
+                result.AvailableFlavors,
+                result.AvailableSizes,
+                result.TotalCount
+            });
         }
 
         public async Task<IActionResult> Details(int id)

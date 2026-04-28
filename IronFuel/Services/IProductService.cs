@@ -6,7 +6,7 @@ namespace IronFuel.Web.Services
     public interface IProductService
     {
         ProductsPageViewModel GetProductsPage(int? categoryId, string? categoryName);
-        IEnumerable<ProductViewModel> GetFilteredProducts(ProductFilterDto filter);
+        FilterResultDto GetFilteredProducts(ProductFilterDto filter);
         Task<ProductViewModel?> GetProductDetailsAsync(int id);
         Task<IReadOnlyList<ProductViewModel>> GetManageProductsAsync();
         Task<DataTableResult<ProductViewModel>> GetDataTableProductsAsync(IFormCollection form);

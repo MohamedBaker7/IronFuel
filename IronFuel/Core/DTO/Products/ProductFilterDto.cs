@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace IronFuel.Application.DTO.Products
+namespace IronFuel.Web.Core.DTO.Products
 {
-    public class ProductFilterDto
+    public record ProductFilterDto
     {
         public int? CategoryId { get; set; }
         public bool InStockOnly { get; set; }
