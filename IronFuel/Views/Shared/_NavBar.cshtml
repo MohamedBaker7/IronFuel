@@ -1,12 +1,17 @@
 ﻿<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom box-shadow mb-3 py-3 fw-bold">
     <div class="container-fluid nav-bar-container">
-        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-            <img class="logo" src="~/assets/images/navbarLogo.png" alt="Logo" />
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="navbarSupportedContent"
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="navbarSupportedContent"
                 aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
+        <a class="navbar-brand mx-auto mx-lg-0" asp-area="" asp-controller="Home" asp-action="Index">
+            <img class="logo" src="~/assets/images/navbarLogo.png" alt="Logo" />
+        </a>
+
+        <div class="d-flex d-lg-none">
+            <partial name="_LoginPartial" />
+        </div>
+
         <div class="collapse navbar-collapse justify-content-between">
             <partial name="_NavLinksDesktop" />
             <partial name="_LoginPartial" />
@@ -14,19 +19,29 @@
     </div>
 </nav>
 
-<div class="offcanvas offcanvas-start bg-black m-3" tabindex="-1" id="mobileMenu">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title text-light">Menu</h5>
-        <button class="btn-close text-light shadow-none" data-bs-dismiss="offcanvas"></button>
+<div class="offcanvas offcanvas-start bg-light" tabindex="-1" id="mobileMenu">
+    <div class="offcanvas-header align-items-center d-block">
+        <button class="btn-close btn-close-dark shadow-none border border-dark border-opacity-25 rounded-circle m-2"
+                data-bs-dismiss="offcanvas" id="closeBtn"
+                style="width:25px; height:25px;">
+        </button>
+
+        <button id="backBtn"
+                class="btn text-muted border-0 shadow-none d-flex align-items-center justify-content-center mt-1 d-none">
+            <span class="svg-icon svg-icon-muted svg-icon-2x">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                    <path d="M15.5 5L8.5 12L15.5 19" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </span>
+            <span class="offcanvas-title text-muted text-uppercase ms-1 mb-0 fw-semibold" id="menuTitle">
+                Menu
+            </span>
+        </button>
+
+
+               
     </div>
-
-    <div class="offcanvas-body fw-bold d-flex flex-column justify-content-between">
-        <div>
-            <partial name="_NavLinksMobile" />
-        </div>
-        <div class="text-end">
-            <partial name="_LoginPartial" />
-        </div>
-
+    <div class="offcanvas-body fw-bold pt-0 ms-3">
+        <partial name="_NavLinksMobile" />
     </div>
 </div>

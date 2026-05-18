@@ -122,6 +122,46 @@
     </div>
 }
 
+
+
+<input asp-for="VideoUrl" type="hidden" />
+
+<div class="mb-4">
+    <label asp-for="ProductVideo" class="form-label"></label>
+    <input asp-for="ProductVideo"
+           type="file"
+           class="form-control rounded-0"
+           accept=".mp4,.webm,.ogg,video/mp4,video/webm,video/ogg" />
+    <span asp-validation-for="ProductVideo" class="text-danger small"></span>
+    <small class="form-text text-muted">MP4, WebM, or Ogg. Max 50 MB.</small>
+
+    @if (!string.IsNullOrWhiteSpace(Model.VideoUrl))
+    {
+        var existingExt = System.IO.Path.GetExtension(Model.VideoUrl!).ToLowerInvariant();
+        var existingMime = existingExt == ".webm" ? "video/webm" : existingExt == ".ogg" ? "video/ogg" : "video/mp4";
+        var existingSrc = Model.VideoUrl!.StartsWith("~/", StringComparison.Ordinal)
+            ? Model.VideoUrl
+            : "~/" + Model.VideoUrl.TrimStart('/');
+
+        <div class="form-check mt-3">
+            <input asp-for="RemoveProductVideo" class="form-check-input" id="RemoveProductVideo" />
+            <label asp-for="RemoveProductVideo" class="form-check-label" for="RemoveProductVideo"></label>
+        </div>
+
+        <div id="existingProductVideoWrap" class="mt-3 ratio ratio-16x9">
+            <video id="existingProductVideo" controls preload="metadata" class="w-100 h-100" style="object-fit:contain;">
+                <source src="@Url.Content(existingSrc)" type="@existingMime" />
+            </video>
+        </div>
+    }
+
+    <div id="videoPreview" class="mt-3 ratio ratio-16x9 d-none">
+        <video id="videoPreviewPlayer" controls preload="metadata" class="w-100 h-100" style="object-fit:contain;">
+            <source id="videoPreviewSource" src="" type="video/mp4" />
+        </video>
+    </div>
+</div>
+
 <template id="variant-template">
     <div class="variant-row border rounded p-3">
         <div class="row g-3">
@@ -159,99 +199,5 @@
 </template>
 
 <script>
-    (() => {
-        const container = document.getElementById("variants-container");
-        const addButton = document.getElementById("add-variant-btn");
-        const template = document.getElementById("variant-template");
-
-        if (!container || !addButton || !template) {
-            return;
-        }
-
-        const reindexVariantRows = () => {
-            const rows = container.querySelectorAll(".variant-row");
-
-            rows.forEach((row, index) => {
-                row.querySelectorAll("[data-variant-field]").forEach((field) => {
-                    const fieldName = field.getAttribute("data-variant-field");
-                    field.name = `Variants[${index}].${fieldName}`;
-                    field.id = `Variants_${index}__${fieldName}`;
-                });
-            });
-        };
-
-        addButton.addEventListener("click", () => {
-            const fragment = template.content.cloneNode(true);
-            container.appendChild(fragment);
-            reindexVariantRows();
-        });
-
-        container.addEventListener("click", (event) => {
-            const button = event.target.closest(".remove-variant-btn");
-            if (!button) {
-                return;
-            }
-
-            const rows = container.querySelectorAll(".variant-row");
-            if (rows.length === 1) {
-                return;
-            }
-
-            button.closest(".variant-row")?.remove();
-            reindexVariantRows();
-        });
-
-        const existingImagesContainer = document.getElementById("existing-images-list");
-        const removedImageIdsInput = document.getElementById("RemovedImageIds");
-        const existingOrderInput = document.getElementById("ExistingImageOrder");
-        const removedIds = new Set();
-
-        const syncImageState = () => {
-            if (!existingImagesContainer || !removedImageIdsInput || !existingOrderInput) {
-                return;
-            }
-
-            const orderedIds = [...existingImagesContainer.querySelectorAll(".existing-image-item")]
-                .map((item) => item.getAttribute("data-image-id"))
-                .filter((id) => id);
-
-            existingOrderInput.value = orderedIds.join(",");
-            removedImageIdsInput.value = [...removedIds].join(",");
-        };
-
-        if (existingImagesContainer) {
-            existingImagesContainer.addEventListener("click", (event) => {
-                const item = event.target.closest(".existing-image-item");
-                if (!item) {
-                    return;
-                }
-
-                if (event.target.closest(".js-image-remove")) {
-                    removedIds.add(item.getAttribute("data-image-id"));
-                    item.remove();
-                    syncImageState();
-                    return;
-                }
-
-                if (event.target.closest(".js-image-up")) {
-                    const prev = item.previousElementSibling;
-                    if (prev) {
-                        existingImagesContainer.insertBefore(item, prev);
-                        syncImageState();
-                    }
-                    return;
-                }
-
-                if (event.target.closest(".js-image-down")) {
-                    const next = item.nextElementSibling;
-                    if (next) {
-                        existingImagesContainer.insertBefore(next, item);
-                        syncImageState();
-                    }
-                }
-            });
-
-            syncImageState();
-        }
-    })();
+    
 </script>

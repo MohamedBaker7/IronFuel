@@ -328,9 +328,6 @@ function clearAllFilters(form) {
     applyFilters(form);
 }
 
-function isDesktop() {
-    return window.innerWidth >= 992;
-}
 
 function createChip(label, type, value = null) {
 

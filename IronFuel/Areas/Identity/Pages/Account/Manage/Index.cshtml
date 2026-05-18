@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
+    Layout = "_ProfileLayout";
 }
 
 <h3>@ViewData["Title"]</h3>
@@ -27,4 +28,9 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('body').addClass('pt-0');
+        });
+    </script>
 }

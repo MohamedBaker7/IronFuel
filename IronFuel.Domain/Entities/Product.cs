@@ -14,7 +14,10 @@ namespace IronFuel.Domain.Entities
         public Brand? Brand { get; set; }
         public string Description { get; set; } = null!;
         public string? Benefits { get; set; } 
-        public string? SuggestedUse { get; set; } 
+        public string? SuggestedUse { get; set; }
+        
+        [MaxLength(2048)]
+        public string? VideoUrl { get; set; }
 
         public ICollection<ProductVariant> Variants { get; set; } = new List<ProductVariant>();
         public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();

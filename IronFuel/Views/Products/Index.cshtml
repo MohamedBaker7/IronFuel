@@ -5,16 +5,26 @@
     ViewData["Title"] = title;
 }
 
-<div class="mt-3 ms-4">
-    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a class="text-decoration-none text-black fw-bold" asp-controller="Home" asp-action="Index">Home</a>
-            </li>
-            <li class="breadcrumb-item active fw-semibold" aria-current="page">@title</li>
-        </ol>
-    </nav>
-</div>
+<nav class="mt-3 ms-4" aria-label="Breadcrumb">
+    <ol class="breadcrumb"
+        itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li class="breadcrumb-item"
+            itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a class="text-decoration-none text-black fw-bold"
+                   asp-controller="Home" asp-action="Index"
+                   itemprop="item">
+                <span itemprop="name">Home</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+        <li class="breadcrumb-item active fw-semibold"
+            aria-current="page"
+            itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">@title</span>
+            <meta itemprop="position" content="2" />
+        </li>
+    </ol>
+</nav>
 
 <div id="pageSpinner" class="d-none">
     <img src="~/assets/images/navbarlogo.png" class="spinner-logo" alt="IronFuel" />
@@ -49,8 +59,10 @@
 
                 <div class="p-lg-0 col-lg-9">
                     <partial name="_ProductsList" model="Model"></partial>
+                   
                     </div>
                 </div>
+
             </div>
         }
         else

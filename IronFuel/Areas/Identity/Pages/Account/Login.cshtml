@@ -5,21 +5,23 @@
     ViewData["Title"] = "Log in";
 }
 
-<h1>@ViewData["Title"]</h1>
-<div class="row d-flex justify-content-center">
-    <div class="col-md-4 border-1 border-black">
+<div class="row d-flex justify-content-center mt-5">
+    <div id="loginFormCard" class="card col-md-4 rounded-2 bg-login border-0 p-4">
         <section>
             <form id="account" method="post">
-                <h2>Use a local account to log in.</h2>
+                <div class="d-flex justify-content-center mb-3">
+                    <img src="~/assets/images/navbarLogo.png" alt="IronFuel Logo" class="img-fluid bg-dark mt-3" style="max-height: 70px;" />
+                </div>
+                <h2>Sign in</h2>
                 <hr />
-                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                    <input asp-for="Input.Email" class="form-control" autocomplete="on" aria-required="true" />
                     <label asp-for="Input.Email" class="form-label">Email</label>
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" />
                     <label asp-for="Input.Password" class="form-label">Password</label>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
@@ -29,23 +31,22 @@
                         @Html.DisplayNameFor(m => m.Input.RememberMe)
                     </label>
                 </div>
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-dark rounded-0">Log in</button>
                 </div>
-                <div>
-                    <p>
-                        <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
-                    </p>
-                    <p>
-                        <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
-                    </p>
-                    <p>
-                        <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Resend email confirmation</a>
-                    </p>
+
+                <div class="mt-3 text-center">
+                    <span class="text-muted fs-6">Don't have an account?</span>
+                    <a asp-area="Identity" asp-page="/Account/Register"
+                           class="text-dark fw-semibold ms-1 w-fit fs-6">
+                        Register
+                    </a>
                 </div>
+             
             </form>
         </section>
-    </div>  
+    </div>
 </div>
 
 @section Scripts {

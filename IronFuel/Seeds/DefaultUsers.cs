@@ -8,7 +8,6 @@
             {
                 UserName = "admin",
                 Email = "admin@IronFuel.com",
-                FullName = "admin",
                 EmailConfirmed = true,
             };
 

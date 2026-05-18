@@ -1,0 +1,27 @@
+@page
+@model OrdersModel
+@{
+    ViewData["Title"] = "Orders";
+    ViewData["PersonIconPage"] = "/Account/Manage/Index";
+    Layout = "_AccountNavLayout";
+}
+
+<h3 class="mb-4">@ViewData["Title"]</h3>
+
+<div class="card border-0 bg-light p-4 rounded-2">
+    <h5 class="mb-3">No orders yet</h5>
+
+    @if (Model.OrderNumbers.Count == 0)
+    {
+        <p class="mb-0">Go to store to place an order.</p>
+    }
+    else
+    {
+        <ul class="list-group list-group-flush">
+            @foreach (var orderNumber in Model.OrderNumbers)
+            {
+                <li class="list-group-item px-0">Order #@orderNumber</li>
+            }
+        </ul>
+    }
+</div>

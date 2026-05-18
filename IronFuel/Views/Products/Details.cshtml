@@ -2,153 +2,334 @@
 
 @{
     ViewData["Title"] = Model.Name;
+    ViewData["MetaDescription"] = Model.Description?.Length > 160
+        ? Model.Description[..157] + "..."
+        : Model.Description;
+
     var placeholder = Url.Content("~/Images/creatine-micronized.png");
     var gallery = Model.Images.Count > 0 ? Model.Images : null;
-    var mainSrc = gallery != null
-        ? Url.Content("~/" + gallery[0].RelativePath.TrimStart('/'))
-        : placeholder;
+
+    // Single helper: resolve a relative image path to a root-relative URL
+    string ImgUrl(string rel) => Url.Content("~/" + rel.TrimStart('/'));
+
+    var mainSrc = gallery != null ? ImgUrl(gallery[0].RelativePath) : placeholder;
+
+    string? videoSrc = "/videos/creatine-video.mp4";
+    string videoMime = "video/mp4";
+    if (!string.IsNullOrWhiteSpace(Model.VideoUrl))
+    {
+        var v = Model.VideoUrl!.Trim();
+        if (v.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || v.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            videoSrc = v;
+        }
+        else
+        {
+            var pathForUrl = v.StartsWith("~/", StringComparison.Ordinal) ? v : "~/" + v.TrimStart('/');
+            videoSrc = Url.Content(pathForUrl);
+        }
+
+        var ext = System.IO.Path.GetExtension(Model.VideoUrl).ToLowerInvariant();
+        videoMime = ext == ".webm" ? "video/webm" : ext == ".ogg" ? "video/ogg" : "video/mp4";
+    }
+}
+
+@section Head {
+    <meta name="description" content="@ViewData["MetaDescription"]" />
+    <meta property="og:title" content="@Model.Name – @Model.Brand!.Name" />
+    <meta property="og:description" content="@ViewData["MetaDescription"]" />
+    @if (gallery != null)
+    {
+        <meta property="og:image" content="@mainSrc" />
+    }
 }
 
 <input id="ProductId" type="hidden" value="@Model.Id" />
-<div class="mt-3 ms-4">
-    <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a class="text-decoration-none text-black fw-bold" asp-controller="Home" asp-action="Index">Home</a>
-            </li>
-            <li class="breadcrumb-item active fw-semibold" aria-current="page">@Model.Name</li>
-        </ol>
-    </nav>
-</div>
 
-<div class="row mt-5 ms-lg-1">
-    <div class="col-lg">
-        <div class="row gallery-wrapper">
-            <div class="thumbnails col-lg-2 thumbs-wrapper">
-                @if (gallery != null)
-                {
-                    foreach (var img in gallery)
+<nav class="mt-3 ms-4" aria-label="Breadcrumb">
+    <ol class="breadcrumb"
+        itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li class="breadcrumb-item"
+            itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a class="text-decoration-none text-black fw-bold"
+                   asp-controller="Home" asp-action="Index"
+                   itemprop="item">
+                <span itemprop="name">Home</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+        <li class="breadcrumb-item active fw-semibold"
+            aria-current="page"
+            itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">@Model.Name</span>
+            <meta itemprop="position" content="2" />
+        </li>
+    </ol>
+</nav>
+
+<div class="product-detail-wrapper mt-5 ms-lg-1 d-lg-grid p-3 p-lg-0">
+
+    <div class="product-left sticky-lg pt-3" style="flex: 1;">
+
+        <section class="gallery-section order-1 order-lg-0"
+                 aria-label="Product images">
+
+            <div class="gallery-wrapper">
+
+                <div class="thumbs-wrapper d-none d-lg-flex flex-column"
+                     role="list"
+                     aria-label="Product image thumbnails">
+                    @if (gallery != null)
                     {
-                        var thumbSrc = Url.Content("~/" + img.RelativePath.TrimStart('/'));
-                        <div class="mb-2">
-                            <img src="@thumbSrc" class="thumb-img" alt="" role="button" />
+                        foreach (var img in gallery)
+                        {
+                            <div class="mb-2" role="listitem">
+                                <img src="@ImgUrl(img.RelativePath)"
+                                     class="thumb-img"
+                                     alt="@(Model.Name + " thumbnail")"
+                                     role="button"
+                                     tabindex="0"
+                                     loading="lazy"
+                                     aria-label="View image: @(Model.Name)" />
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="mb-2" role="listitem">
+                            <img src="@placeholder"
+                                 class="thumb-img"
+                                 alt="@Model.Name thumbnail"
+                                 role="button"
+                                 tabindex="0"
+                                 loading="lazy" />
                         </div>
                     }
-                }
-                else
-                {
-                    <div class="mb-2">
-                        <img src="@placeholder" class="thumb-img" alt="" role="button" />
-                    </div>
-                }
+                </div>
+
+                <div class="main-image-wrapper">
+                    <img id="mainProductImage"
+                         src="@mainSrc"
+                         class="img-fluid w-100"
+                         alt="@Model.Name"
+                         loading="eager" />
+                </div>
             </div>
-            <div class="main-image mt-3 col-10">
-                <img id="mainProductImage" src="@mainSrc" class="img-fluid" alt="@Model.Name" />
-            </div>
-            <div class="dots-container text-center mt-2 d-lg-none">
-                @if (gallery != null)
-                {
-                    int index = 0;
-                    foreach (var img in gallery)
+
+            @if (gallery != null)
+            {
+                <div class="dots-container text-center mt-2 d-lg-none"
+                     role="tablist"
+                     aria-label="Image navigation">
+                    @for (int i = 0; i < gallery.Count; i++)
                     {
-                        var src = Url.Content("~/" + img.RelativePath.TrimStart('/'));
-                            <i class="bi bi-dot fs-1" data-src="@src" data-index="@index"></i>
-                        index++;
+                        <button class="dot-btn btn p-0 border-0"
+                                role="tab"
+                                aria-selected="@(i == 0 ? "true" : "false")"
+                                aria-label="Show image @(i + 1)"
+                                data-src="@ImgUrl(gallery[i].RelativePath)"
+                                data-index="@i"
+                                tabindex="@(i == 0 ? "0" : "-1")">
+                            <i class="bi bi-dot fs-1" aria-hidden="true"></i>
+                        </button>
                     }
-                }
-            </div>
-        </div>
-        <hr />
-        <div class="row ms-1">
-            <nav class="navbar navbar-light p-0">
-                <div class="container-fluid d-flex justify-content-between p-0 pointer" data-bs-toggle="collapse" data-bs-target="#Benefits" aria-controls="Benefits" aria-expanded="false" aria-label="Toggle navigation">
-                    <label class="form-check-label me-3 pointer fw-bold fs-5">
-                        Benefits
-                    </label>
-                    <button class="navbar-toggler border-0 p-0 rounded-5 expand shadow-none" type="button">
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                            </svg>
-                        </span>
-                    </button>
                 </div>
-            </nav>
-            <div class="collapse" id="Benefits" data-bs-theme="light">
-                <span class="fst-italic">
-                    @Html.Raw(Model.Benefits?.Replace("\\n", "<br />"))
-                </span>
-            </div>
-        </div>
-        <hr />
-        <div class="row ms-1">
-            <nav class="navbar navbar-light p-0">
-                <div class="container-fluid d-flex justify-content-between p-0 pointer" data-bs-toggle="collapse" data-bs-target="#SuggestedUse" aria-controls="SuggestedUse" aria-expanded="false" aria-label="Toggle navigation">
-                    <label class="form-check-label me-3 pointer fw-bold fs-5">
-                        Suggested Use
-                    </label>
-                    <button class="navbar-toggler border-0 p-0 rounded-5 expand shadow-none" type="button">
-                        <span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                            </svg>
-                        </span>
-                    </button>
-                </div>
-            </nav>
-            <div class="collapse" id="SuggestedUse" data-bs-theme="light">
-                <span class="fst-italic">
-                    @Html.Raw(Model.SuggestedUse?.Replace("\\n", "<br />"))
-                </span>
-            </div>
-        </div>
-        <hr />
+            }
+        </section>
+
     </div>
 
-    <div class="col-lg-5 offset-lg-1">
-        <h1 class="fw-bold mt-3">@Model.Name</h1>
-        <h4 class="fw-semibold mt-3">@Model.Brand!.Name</h4>
-        <hr />
-        <p class="fs-5 py-3">@Html.Raw(Model.Description.Replace("\\n", "<br />"))</p>
-        <hr />
-        <div class="row">
-            <div class="col mb-3">
-                <div class="mb-2">
-                    <label class="mb-2 text-muted fw-semibold" for="Flavors">
-                        Flavour:
-                    </label>
-                    <select id="Flavors" class="form-select form-select-solid rounded-0 p-3 ps-5 shadow-none text-uppercase" asp-for="SelectedFlavour" asp-items="Model.Flavors">
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col mb-3">
-                <div class="mb-2">
-                    <label class="mb-2 text-muted fw-semibold" for="Sizes">
-                        Sizes:
-                    </label>
-                    <select id="Sizes" class="form-select form-select-solid rounded-0 p-3 ps-5 shadow-none text-uppercase" asp-for="SelectedSizes" asp-items="Model.Sizes">
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <span id="Price" class="text-uppercase mt-5 fs-4 fw-bold"></span>
-        </div>
-        <div class="row">
-            <span id="ServingsPerContainer"></span>
-        </div>
-    </div>
+    <div class="product-right" style="flex: 1;">
 
-    <div class="row mt-5">
-        <video controls width="600">
-            <source src="~/videos/creatine-video.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <section class="product-info order-2 order-lg-0">
+            <h2 class="fw-semibold mt-2 fs-4" itemprop="brand">@Model.Brand!.Name</h2>
+            <h1 class="fw-bold mt-3" itemprop="name">@Model.Name</h1>
+            <hr />
+            <div class="product-description py-3" itemprop="description">
+                <ul class="description-list">
+                    @foreach (var line in Model.Description?.Split(new[] { "\\n" }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>())
+                    {
+                        <li class="mb-2">@line.Trim()</li>
+                    }
+                </ul>
+            </div>
+            <hr />
+        </section>
+
+        <section class="selectors-section order-3 order-lg-0"
+                 aria-label="Product options">
+            <div class="mb-3">
+                <label class="mb-2 text-muted fw-semibold" for="Flavors">Flavour:</label>
+                <select id="Flavors"
+                        class="form-select form-select-solid rounded-0 p-3 ps-5 shadow-none text-uppercase js-select2"
+                        asp-for="SelectedFlavour"
+                        asp-items="Model.Flavors"
+                        aria-label="Select flavour">
+                </select>
+
+                
+
+            </div>
+            <div class="mb-3">
+                <label class="mb-2 text-muted fw-semibold" for="Sizes">Size:</label>
+                <select id="Sizes"
+                        class="form-select form-select-solid rounded-0 p-3 ps-5 shadow-none text-uppercase js-select2"
+                        asp-for="SelectedSizes"
+                        asp-items="Model.Sizes"
+                        aria-label="Select size">
+                </select>
+            </div>
+
+            <div class="mt-3" aria-live="polite" aria-atomic="true">
+                <span id="Price"
+                      class="text-uppercase fs-4 fw-bold d-block"
+                      aria-label="Product price"></span>
+                <span id="ServingsPerContainer"
+                      class="text-muted fs-6 d-block mt-1"
+                      aria-label="Servings per container"></span>
+            </div>
+        </section>
+
+
+        <section class="purchase-section order-4 order-lg-0 mt-3"
+                 aria-label="Purchase options">
+
+            <label class="mb-2 text-muted fw-semibold" for="QuantityInput">
+                Quantity:
+            </label>
+            <div class="d-flex justify-content-center border border-muted border-1 quantity-control-wrapper"
+                 role="group"
+                 aria-label="Quantity selector">
+                <div class="d-flex p-2 w-100 justify-content-between">
+                    <button id="QuantityDecrease"
+                            type="button"
+                            class="btn border-0 rounded-0 quantity-arrow-btn"
+                            aria-label="Decrease quantity"
+                            aria-controls="QuantityInput">
+                        <svg viewBox="0 0 16 16" width="16" height="16"
+                             fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" aria-hidden="true" focusable="false">
+                            <line x1="3" y1="8" x2="13" y2="8" />
+                        </svg>
+                    </button>
+
+                    <input id="QuantityInput"
+                           type="number"
+                           class="form-control border-0 rounded-0 text-center quantity-input"
+                           min="1"
+                           value="1"
+                           aria-label="Quantity"
+                           aria-describedby="QuantityDecrease QuantityIncrease" />
+
+                    <button id="QuantityIncrease"
+                            type="button"
+                            class="btn border-0 rounded-0 quantity-arrow-btn"
+                            aria-label="Increase quantity"
+                            aria-controls="QuantityInput">
+                        <svg viewBox="0 0 16 16" width="16" height="16"
+                             fill="none" stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" aria-hidden="true" focusable="false">
+                            <line x1="8" y1="3" x2="8" y2="13" />
+                            <line x1="3" y1="8" x2="13" y2="8" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <button id="AddToCartBtn"
+                    type="button"
+                    class="btn btn-dark rounded-0 py-3 fw-bold text-uppercase add-to-cart-btn w-100 mt-3"
+                    aria-label="Add @Model.Name to cart">
+                Add to Cart
+            </button>
+            
+        </section>
+
+        <section class="accordion-section order-5 order-lg-0">
+            @if (!string.IsNullOrWhiteSpace(Model.Benefits))
+            {
+                <partial name="_CollapseSection" model="@(new CollapseSectionViewModel {TargetId = "Benefits", Label = "Benefits", Content = Model.Benefits})"></partial>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.SuggestedUse))
+            {
+                <partial name="_CollapseSection" model="@(new CollapseSectionViewModel {TargetId = "SuggestedUse", Label = "SuggestedUse", Content = Model.SuggestedUse})"></partial>
+            }
+        </section>
     </div>
+        
 </div>
 
+
+
+        <div class="offcanvas offcanvas-bottom m-2 rounded-2 h-auto mh-75"
+             tabindex="-1"
+             id="flavorOffcanvas">
+            <div class="offcanvas-header border-bottom">
+                <h6 class="offcanvas-title text-uppercase fw-bold">
+                    Flavours
+                </h6>
+                <button type="button"
+                        class="btn-close shadow-none"
+                        data-bs-dismiss="offcanvas">
+                </button>
+            </div>
+            <div class="offcanvas-body p-2">
+                @foreach (var flavor in Model.Flavors)
+                {
+                    <button type="button"
+                            class="btn text-muted rounded-0 text-uppercase w-100 px-4 py-3 mb-1 text-center border-0 shadow-none flavor-option"
+                            data-value="@flavor.Value"
+                            data-text="@flavor.Text"
+                            data-bs-dismiss="offcanvas">
+                        @flavor.Text
+                    </button>
+                }
+            </div>
+        </div>
+        
+        <div class="offcanvas offcanvas-bottom m-2 rounded-2 h-auto mh-75"
+             tabindex="-1"
+             id="sizeOffcanvas">
+            <div class="offcanvas-header border-bottom">
+                <h6 class="offcanvas-title text-uppercase fw-bold">
+                    Sizes
+                </h6>
+                <button type="button"
+                        class="btn-close shadow-none"
+                        data-bs-dismiss="offcanvas">
+                </button>
+            </div>
+            <div class="offcanvas-body p-2">
+                @foreach (var size in Model.Sizes)
+                {
+                    <button type="button"
+                            class="btn text-muted rounded-0 text-uppercase w-100 px-4 py-3 mb-1 text-center border-0 shadow-none size-option"
+                            data-value="@size.Value"
+                            data-text="@size.Text"
+                            data-bs-dismiss="offcanvas">
+                        @size.Text
+                    </button>
+                }
+            </div>
+        </div>
+
+        
+
+@if (!string.IsNullOrWhiteSpace(videoSrc))
+{
+
+    <div class="p-3 p-lg-0">
+        <div class="ratio ratio-16x9 mt-5 p-5">
+            <video controls preload="metadata" aria-label="Product video for @Model.Name">
+                <source src="@videoSrc" type="@videoMime" />
+                Your browser does not support the video tag.
+            </video>
+        </div>
+    </div>
+
+}
+
 @section Scripts {
-    <script src="~/js/details.js" asp-append-version="true"></script>
+    <script src="~/js/details.js" asp-append-version="true" defer></script>
 }

@@ -1,14 +1,37 @@
 @model ProductEditorViewModel
 @{
-    ViewData["Title"] = "Edit product";
+    var title = "Edit product";
+    ViewData["Title"] = title;
 }
+
+
+<nav class="mt-3 ms-4" aria-label="Breadcrumb">
+    <ol class="breadcrumb"
+        itemscope itemtype="https://schema.org/BreadcrumbList">
+        <li class="breadcrumb-item"
+            itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <a class="text-decoration-none text-black fw-bold"
+                   asp-area="" asp-controller="Home" asp-action="Index"
+                   itemprop="item">
+                <span itemprop="name">Home</span>
+            </a>
+            <meta itemprop="position" content="1" />
+        </li>
+        <li class="breadcrumb-item active fw-semibold"
+            aria-current="page"
+            itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+            <span itemprop="name">@title</span>
+            <meta itemprop="position" content="2" />
+        </li>
+    </ol>
+</nav>
 
 <div class="mt-5 pt-3 ms-4 me-4 mb-5" style="max-width: 48rem;">
     <h1 class="h3 mb-4">Edit product</h1>
 
     <form asp-area="Admin" asp-controller="Products" asp-action="Edit" asp-route-id="@Model.Id" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="Id" />
-        <partial name="~/Views/Products/_ProductForm.cshtml" model="Model" />
+        <partial name="_ProductForm" model="Model" />
         <div class="d-flex flex-wrap gap-2">
             <button type="submit" class="btn btn-dark rounded-0 btn-save">
                 <span class="indicator-label">
@@ -25,4 +48,5 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/manage-products.js" asp-append-version="true"></script>
 }

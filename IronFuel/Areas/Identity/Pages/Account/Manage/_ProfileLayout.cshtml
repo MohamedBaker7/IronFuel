@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - IronFuel</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+
+    <!-- Profile Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-white bg-gray-color py-3 fw-bold border-bottom">
+        <div class="container">
+
+            <!-- Logo -->
+            <a class="navbar-brand bg-dark" asp-controller="Home" asp-action="Index" asp-area="">
+                <img src="~/assets/images/navbarLogo.png" alt="IronFuel" style="max-height:45px;" />
+            </a>
+
+            <!-- Mobile toggler -->
+            <button class="navbar-toggler border-0 shadow-none" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#profileNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Nav Links -->
+            <div class="collapse navbar-collapse" id="profileNav">
+                <ul class="navbar-nav gap-4">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="Products" asp-action="Index" asp-area="">
+                            Shop
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Orders">
+                            Orders
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Profile icon -->
+                <ul class="navbar-nav text-end">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark d-flex align-items-center gap-2"
+                               asp-area="Identity" asp-page="/Account/Orders">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="1.5" />
+                                <path d="M20 21C20 18.2386 16.4183 16 12 16C7.58172 16 4 18.2386 4 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                            </svg>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container mt-5">
+        <div class="row">
+
+            <!-- Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card border-0 bg-light p-3 rounded-2">
+                    <div class="text-center mb-4">
+                        <!-- avatar -->
+                        <div class="rounded-circle bg-dark d-flex align-items-center
+                            justify-content-center mx-auto mb-2"
+                             style="width:80px; height:80px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="white" stroke-width="1.5" />
+                                <path d="M20 21C20 18.2386 16.4183 16 12 16C7.58172 16 4 18.2386 4 21" stroke="white" stroke-width="1.5" stroke-linecap="round" />
+                            </svg>
+                        </div>
+                        <h6 class="fw-bold mb-0">@User.Identity?.Name!.Split('@')[0]</h6>
+                        <small class="text-muted">@User.Identity?.Name</small>
+                    </div>
+
+                    <!-- sidebar nav -->
+                    <ul class="list-unstyled fw-semibold">
+                        <li class="mb-2">
+                            <a asp-area="Identity" asp-page="/Account/Manage/Index"
+                                   class="d-flex align-items-center gap-2 text-dark text-decoration-none
+                                p-2 rounded-2 @(ViewData["ActivePage"]?.ToString() == "Index" ? "bg-dark text-white active-sidebar" : "hover-sidebar")">
+                                <i class="bi bi-person"></i> Profile
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-area="Identity" asp-page="/Account/Orders"
+                                   class="d-flex align-items-center gap-2 text-dark text-decoration-none
+                                p-2 rounded-2 @(ViewData["ActivePage"]?.ToString() == "Orders" ? "bg-dark text-white active-sidebar" : "hover-sidebar")">
+                                <i class="bi bi-bag"></i> My Orders
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-area="Identity" asp-page="/Account/Manage/Email"
+                                   class="d-flex align-items-center gap-2 text-dark text-decoration-none
+                                p-2 rounded-2 @(ViewData["ActivePage"]?.ToString() == "Email" ? "bg-dark text-white active-sidebar" : "hover-sidebar")">
+                                <i class="bi bi-envelope"></i> Email
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a asp-area="Identity" asp-page="/Account/Manage/ChangePassword"
+                                   class="d-flex align-items-center gap-2 text-dark text-decoration-none
+                                p-2 rounded-2 @(ViewData["ActivePage"]?.ToString() == "ChangePassword" ? "bg-dark text-white active-sidebar" : "hover-sidebar")">
+                                <i class="bi bi-lock"></i> Change Password
+                            </a>
+                        </li>
+                        <li class="mt-4">
+                            <form asp-area="Identity" asp-page="/Account/Logout"
+                                  asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                                <button type="submit"
+                                        class="btn btn-outline-dark w-100 rounded-0 fw-semibold">
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                @RenderBody()
+            </div>
+
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,8 +1,6 @@
 ﻿@model ProductsPageViewModel
 
-@* <div id="activeFiltersBar" class="d-flex flex-wrap gap-2 mb-2"></div> *@
-
-<form class="filter-form" method="post">
+<form class="filter-form sticky-lg pt-3" method="post">
     <div class="ms-3 filter-container">
         <div class="fw-semibold">
             <i class="bi bi-filter me-1"></i>
@@ -11,50 +9,55 @@
         </div>
 
         <div>
-            <div>
-                <div class="form-check form-switch d-flex justify-content-between p-0">
-                    <label class="form-check-label me-3">In Stock Only</label>
-                    <input class="form-check-input switch js-filter" name="inStock" type="checkbox" role="switch">
-                </div>
-                <hr>
+            <div class="form-check form-switch d-flex justify-content-between p-0">
+                <label class="form-check-label me-3">In Stock Only</label>
+                <input class="form-check-input switch js-filter" name="inStock" type="checkbox" role="switch">
             </div>
-
-            <div>
-                <nav class="navbar navbar-light p-0">
-                    <div class="container-fluid d-flex justify-content-between p-0 pointer" data-bs-toggle="collapse" data-bs-target="#PriceExpand" aria-controls="PriceExpand" aria-expanded="false" aria-label="Toggle navigation">
-                        <label class="form-check-label me-3 pointer">
-                            Price
-                        </label>
-                        <button class="navbar-toggler border-0 p-0 rounded-5 expand shadow-none" type="button">
-                            <span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                    <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                                </svg>
-                            </span>
-                        </button>
-                    </div>
-                </nav>
-                <div class="collapse" id="PriceExpand" data-bs-theme="light">
-                    <div class="price-filter">
-                        <div class="d-flex gap-2 mb-2">
-                            <input type="number" class="form-control rounded-0 w-75 fw-bold" value="" name="minPrice" placeholder="0" min="0" max="@(Model.MaxPrice - 1)">
-                            <span class="text-muted mt-2 mx-3 fw-light fw-semibold fs-6">To</span>
-                            <input type="number" class="form-control rounded-0 w-75 fw-bold" value="" name="maxPrice" placeholder="@((int)Model.MaxPrice!)" min="0" max="@Model.MaxPrice">
-                        </div>
-                    </div>
-                </div>
-                <hr>
-            </div>
+            <hr>
         </div>
 
         <div>
             <nav class="navbar navbar-light p-0">
-                <div class="container-fluid d-flex justify-content-between p-0 pointer" data-bs-toggle="collapse" data-bs-target="#FlavourExpand" aria-controls="FlavourExpand" aria-expanded="false" aria-label="Toggle navigation">
+                <div class="collapse-toggle container-fluid d-flex justify-content-between p-0 pointer"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#PriceExpand"
+                     aria-controls="PriceExpand"
+                     aria-expanded="false"
+                     aria-label="Toggle navigation">
+                    <label class="form-check-label me-3 pointer">
+                        Price
+                    </label>
+                    <button class="navbar-toggler border-0 p-0 rounded-5 expand shadow-none" type="button">
+                        <span class="collapse-chevron rounded-circle" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                            </svg>
+                        </span>
+                    </button>
+                </div>
+            </nav>
+            <div class="collapse" id="PriceExpand" data-bs-theme="light">
+                <div class="price-filter">
+                    <div class="d-flex gap-2 m-2">
+                        <input type="number" class="form-control rounded-0 w-75 fw-bold" value="" name="minPrice" placeholder="0" min="0" max="@(Model.MaxPrice - 1)">
+                        <span class="text-muted mt-2 mx-3 fw-light fw-semibold fs-6">To</span>
+                        <input type="number" class="form-control rounded-0 w-75 fw-bold" value="" name="maxPrice" placeholder="@((int)Model.MaxPrice!)" min="0" max="@Model.MaxPrice">
+                    </div>
+                </div>
+            </div>
+            <hr>
+        </div>
+
+        <div>
+            <nav class="navbar navbar-light p-0">
+                <div class="collapse-toggle container-fluid d-flex justify-content-between p-0 pointer" data-bs-toggle="collapse" data-bs-target="#FlavourExpand" aria-controls="FlavourExpand" aria-expanded="false" aria-label="Toggle navigation">
                     <label class="form-check-label me-3 pointer">Flavour</label>
                     <button class="navbar-toggler border-0 p-0 rounded-5 expand shadow-none" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                        </svg>
+                        <span class="collapse-chevron rounded-circle" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                            </svg>
+                        </span>
                     </button>
                 </div>
             </nav>
@@ -62,8 +65,8 @@
                 @foreach (var flavour in Model.Flavours)
                 {
                     <div class="form-check">
-                        <input class="form-check-input js-falvour js-filter shadow-none" type="checkbox" 
-                        value="@flavour.Flavour" name="flavors_@(flavour.Flavour)">
+                        <input class="form-check-input js-falvour js-filter shadow-none" type="checkbox"
+                               value="@flavour.Flavour" name="flavors_@(flavour.Flavour)">
                         <label class="form-check-label text-muted fw-semibold fs-6"
                                data-flavor="@flavour.Flavour">
                             @flavour.Flavour (<span class="flavor-count">@flavour.Count</span>)
@@ -73,14 +76,17 @@
             </div>
             <hr>
         </div>
+   
         <div>
             <nav class="navbar navbar-light p-0">
-                <div class="container-fluid d-flex justify-content-between p-0 pointer" data-bs-toggle="collapse" data-bs-target="#SizeExpand" aria-controls="SizeExpand" aria-expanded="false" aria-label="Toggle navigation">
+                <div class="collapse-toggle container-fluid d-flex justify-content-between p-0 pointer" data-bs-toggle="collapse" data-bs-target="#SizeExpand" aria-controls="SizeExpand" aria-expanded="false" aria-label="Toggle navigation">
                     <label class="form-check-label me-3 pointer">Size</label>
                     <button class="navbar-toggler border-0 p-0 rounded-5 expand shadow-none" type="button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="black" />
-                        </svg>
+                        <span class="collapse-chevron rounded-circle" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                <path d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z" fill="currentColor" />
+                            </svg>
+                        </span>
                     </button>
                 </div>
             </nav>
@@ -88,8 +94,8 @@
                 @foreach (var item in Model.Sizes)
                 {
                     <div class="form-check">
-                        <input class="form-check-input js-size js-filter shadow-none" type="checkbox" 
-                        value="@($"{item.Min}-{item.Max}")" name="sizes">
+                        <input class="form-check-input js-size js-filter shadow-none" type="checkbox"
+                               value="@($"{item.Min}-{item.Max}")" name="sizes">
                         <label class="form-check-label text-muted fw-semibold fs-6"
                                data-size="@($"{item.Min}-{item.Max}")">
                             @item.Label Kg (<span class="size-count">@item.Count</span>)

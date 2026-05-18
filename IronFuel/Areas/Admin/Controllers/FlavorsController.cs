@@ -1,10 +1,12 @@
 using IronFuel.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace IronFuel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [EnableRateLimiting("fixed")]
+    [Authorize(Roles = AppRoles.Admin)]
     public class FlavorsController : Controller
     {
         private readonly IFlavorService _flavorService;
@@ -14,9 +16,9 @@ namespace IronFuel.Web.Areas.Admin.Controllers
             _flavorService = flavorService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var flavors = _flavorService.GetFlavors();
+            var flavors = await _flavorService.GetFlavors();
             return View(flavors);
         }
 

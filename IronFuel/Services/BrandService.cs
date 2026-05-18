@@ -5,17 +5,36 @@ namespace IronFuel.Web.Services
     public class BrandService : IBrandService
     {
         private readonly IApplicationDbContext _context;
+        private readonly CacheService _cacheService;
         private readonly IMapper _mapper;
 
-        public BrandService(IApplicationDbContext context, IMapper mapper)
+        public BrandService(IApplicationDbContext context, CacheService cacheService, IMapper mapper)
         {
             _context = context;
+            _cacheService = cacheService;
             _mapper = mapper;
         }
 
-        public IReadOnlyList<BrandViewModel> GetBrands()
+        public async Task<IReadOnlyList<BrandViewModel>?> GetBrands()
         {
-            var brands = _context.Brands.ToList();
+            var cacheKey = "brands_list";
+
+            try
+            {
+                var cached = await _cacheService.GetAsync<IReadOnlyList<Brand>>(cacheKey);
+                if (cached is not null)
+                    return _mapper.Map<IReadOnlyList<BrandViewModel>>(cached);
+            }
+            catch
+            {
+                throw new Exception("Error retrieving brands from cache.");
+            }
+
+            var brands = await _context.Brands.ToListAsync();
+            if (brands is null) return null;
+
+            await _cacheService.SetAsync(cacheKey, brands, TimeSpan.FromHours(1));
+
             return _mapper.Map<IReadOnlyList<BrandViewModel>>(brands);
         }
 

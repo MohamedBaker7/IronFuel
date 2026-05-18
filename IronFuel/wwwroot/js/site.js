@@ -1,21 +1,35 @@
-﻿﻿var updatedRow;
+﻿var updatedRow;
 var datatable;
 
+function isDesktop() {
+    return window.innerWidth >= 992;
+}
+
+function isTablet() {
+    return window.innerWidth < 992 && window.innerWidth >= 768;
+}
+
+function isMobile() {
+    return window.innerWidth < 768;
+}
+
 function applySelect2() {
-    $('.js-select2').select2();
-    //Revalidate Select2 List After Select Item
-    //$('.js-select2').on('select2:select', function (e) {
-    //    $('form').not('#SignOut').validate().element('#' + $(this).attr('id'))
-    //});
+    $('.js-select2').select2({
+        width: '100%',
+        dropdownParent: $('body'),
+        minimumResultsForSearch: Infinity,
+    });
+
+
 }
 
 function adjustCanvas() {
     var canvas = $("#mobileFilter");
 
-    if (window.innerWidth <= 700) {
+    if (isMobile() || isTablet()) {
         canvas.removeClass("offcanvas-end")
             .addClass("offcanvas-bottom");
-    } else {
+    } else if (isTablet()) {
         canvas.removeClass('offcanvas-bottom')
             .addClass('offcanvas-end');
     }
@@ -70,12 +84,12 @@ function onModelComplete() {
 }
 
 // Handle Save Button Submit On Modal
-$('.js-modal-save').on('click', function() {
+$('.js-modal-save').on('click', function () {
     $('.js-form').submit();
 });
 
 //Handle bootstrap modal
-$('body').delegate('.js-render-modal', 'click', function() {
+$('body').delegate('.js-render-modal', 'click', function () {
     var btn = $(this);
     var modal = $('#Modal');
     var title = modal.find('#Modal-title').text(btn.data('title'));
@@ -87,12 +101,12 @@ $('body').delegate('.js-render-modal', 'click', function() {
 
     $.get({
         url: btn.data('url'),
-        success: function(form) {
+        success: function (form) {
             modal.find('.modal-body').html(form);
             $.validator.unobtrusive.parse(modal);
 
         },
-        error: function() {
+        error: function () {
             showSuccessMessage("Something went wrong!");
         }
     });
@@ -102,7 +116,7 @@ $('body').delegate('.js-render-modal', 'click', function() {
 });
 
 //Handle Toggle Status 
-$(document).on('click', '.js-toggle-status', function() {
+$(document).on('click', '.js-toggle-status', function () {
     var btn = $(this);
 
     bootbox.confirm({
@@ -117,7 +131,7 @@ $(document).on('click', '.js-toggle-status', function() {
                 className: 'btn-light rounded-0 border-0 shadow-none'
             }
         },
-        callback: function(result) {
+        callback: function (result) {
             if (!result) return;
 
             $.post({
@@ -125,7 +139,7 @@ $(document).on('click', '.js-toggle-status', function() {
                 data: {
                     '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                 },
-                success: function(lastUpdatedOn) {
+                success: function (lastUpdatedOn) {
                     var parentRow = btn.closest('tr');
                     var childSpan = parentRow.find('.js-status');
                     var isDeleted = childSpan.text().trim() === 'Deleted';
@@ -144,7 +158,7 @@ $(document).on('click', '.js-toggle-status', function() {
 
                     toastr.success("Item toggled successfully.", "Success");
                 },
-                error: function() {
+                error: function () {
                     toastr.error("Failed", "Error");
                 }
             });
@@ -152,38 +166,36 @@ $(document).on('click', '.js-toggle-status', function() {
     });
 });
 
-
-
 // run on resize
-$(window).resize(function() {
+$(window).resize(function () {
     adjustCanvas();
 });
 
 
-$(document).ready(function() {
+$(document).ready(function () {
     applySelect2();
 
     adjustCanvas();
 
-    $(".offcanvas .nav-link").on("click", function() {
+    $(".offcanvas .nav-link").on("click", function () {
         $("#mobileMenu").removeClass("show");
     });
 
-    initDatatable();        
+    initDatatable();
 
 })
 
 
 
 
-$(document).on('submit', 'form', function() {
+$(document).on('submit', 'form', function () {
     var form = $(this);
     var submitBtn = form.find(':submit');
 
     DisableSubmit(submitBtn);
 
     // Re-show button if server returns validation errors (page stays same)
-    $(window).on("load", function() {
+    $(window).on("load", function () {
         ShowSubmitButton(submitBtn);
     });
 });

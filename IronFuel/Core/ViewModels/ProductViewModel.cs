@@ -15,6 +15,8 @@ namespace IronFuel.Web.Core.ViewModels
         public string? Benefits { get; set; }
         public string? SuggestedUse { get; set; }
 
+        public string? VideoUrl { get; set; }
+
         public bool IsDeleted { get; set; }
 
         [Display(Name = "Flavour")]

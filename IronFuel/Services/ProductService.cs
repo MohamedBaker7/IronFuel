@@ -12,7 +12,8 @@ namespace IronFuel.Web.Services
             (0.5m, 1m),
             (1m, 3m),
             (3m, 6m),
-            (6m, 12m)
+            (6m, 12m),
+            (12m, 30m)
         };
 
         private readonly IApplicationDbContext _context;
@@ -182,6 +183,7 @@ namespace IronFuel.Web.Services
                 Description = product.Description,
                 Benefits = product.Benefits,
                 SuggestedUse = product.SuggestedUse,
+                VideoUrl = product.VideoUrl,
                 Variants = product.Variants
                     .OrderBy(v => v.Id)
                     .Select(v => new ProductVariantInputViewModel
@@ -256,6 +258,14 @@ namespace IronFuel.Web.Services
             if (images.Count > 0)
                 _context.ProductImages.AddRange(images);
 
+            if (model.ProductVideo is { Length: > 0 })
+            {
+                var videoValidation = _imageService.ValidateProductVideo(model.ProductVideo);
+                if (!videoValidation.isValid)
+                    return (false, nameof(model.ProductVideo), videoValidation.errorMessage);
+                product.VideoUrl = await _imageService.SaveProductVideoAsync(product.Id, model.ProductVideo);
+            }
+
             await _context.SaveChangesAsync();
             InvalidateProductCache();
             return (true, null, null);
@@ -288,6 +298,10 @@ namespace IronFuel.Web.Services
             product.Description = model.Description.Trim();
             product.Benefits = string.IsNullOrWhiteSpace(model.Benefits) ? null : model.Benefits.Trim();
             product.SuggestedUse = string.IsNullOrWhiteSpace(model.SuggestedUse) ? null : model.SuggestedUse.Trim();
+
+            var videoResult = await ApplyProductVideoForUpdateAsync(product, model);
+            if (!videoResult.Success)
+                return (false, videoResult.ErrorKey, videoResult.ErrorMessage);
 
             _context.ProductVariants.RemoveRange(product.Variants);
             var variants = model.Variants.Select(v => new ProductVariant
@@ -346,6 +360,33 @@ namespace IronFuel.Web.Services
                 .FirstOrDefaultAsync();
 
             return (sizes.Cast<object>().ToList(), price);
+        }
+
+        private async Task<(bool Success, string? ErrorKey, string? ErrorMessage)> ApplyProductVideoForUpdateAsync(
+            Product product, ProductEditorViewModel model)
+        {
+            if (model.ProductVideo is { Length: > 0 })
+            {
+                var validation = _imageService.ValidateProductVideo(model.ProductVideo);
+                if (!validation.isValid)
+                    return (false, nameof(model.ProductVideo), validation.errorMessage);
+
+                if (!string.IsNullOrEmpty(product.VideoUrl))
+                    await _imageService.DeleteProductVideoByUrlAsync(product.VideoUrl);
+
+                product.VideoUrl = await _imageService.SaveProductVideoAsync(product.Id, model.ProductVideo);
+                return (true, null, null);
+            }
+
+            if (model.RemoveProductVideo)
+            {
+                if (!string.IsNullOrEmpty(product.VideoUrl))
+                    await _imageService.DeleteProductVideoByUrlAsync(product.VideoUrl);
+
+                product.VideoUrl = null;
+            }
+
+            return (true, null, null);
         }
 
         private async Task<(bool Success, string? ErrorKey, string? ErrorMessage)> ValidateEditorAsync(ProductEditorViewModel model)

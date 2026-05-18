@@ -3,6 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    @await RenderSectionAsync("Head", required: false)
+
     <title>@ViewData["Title"] | IronFuel</title>
     <script type="importmap"></script>
 
@@ -18,20 +21,20 @@
     <link rel="stylesheet" href="~/lib/datatables/css/datatables.bootstrap4.min.css" />
     
     @await RenderSectionAsync("Styles", required: false)
-
+    <link rel="stylesheet" href="~/css/product.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
     <header class="fixed-top">
-        <partial name="_OffersBar"></partial>
-        <partial name="_NavBar"></partial>
+        @if (ViewData["HideNavbar"] == null || !(bool)ViewData["HideNavbar"]!)
+            {
+                <partial name="_NavBar"></partial>
+            }               
     </header>
     <div class="container-fluid d-flex justify-content-center pb-3 px-0">
         <main role="main" class="w-100">
                 @RenderBody()
-
                 <partial name="_Modal" />
-
         </main>
     </div>
 
@@ -43,6 +46,7 @@
     <script src="~/lib/toastr.js/toastr.min.js"></script>
     <script src="~/lib/datatables/js/jquery.datatables.min.js"></script>
     <script src="~/lib/datatables/js/datatables.bootstrap4.min.js"></script>
+    <script src="~/js/mobile-menu.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

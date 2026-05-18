@@ -5,18 +5,38 @@ namespace IronFuel.Web.Services
     public class CategoryService : ICategoryService
     {
         private readonly IApplicationDbContext _context;
+        private readonly CacheService _cacheService;
         private readonly IMapper _mapper;
 
-        public CategoryService(IApplicationDbContext context, IMapper mapper)
+        public CategoryService(IApplicationDbContext context, CacheService cacheService, IMapper mapper)
         {
             _context = context;
+            _cacheService = cacheService;
             _mapper = mapper;
         }
 
 
-        public IReadOnlyList<CategoryViewModel> GetCategories()
+        public async Task<IReadOnlyList<CategoryViewModel>?> GetCategories()
         {
-            var categories = _context.Categories.ToList();
+            var cacheKey = "categories_list";
+
+            try
+            {
+                var cached = await _cacheService.GetAsync<IReadOnlyList<Category>>(cacheKey);
+                if (cached is not null)
+                    return _mapper.Map<IReadOnlyList<CategoryViewModel>>(cached);
+
+            }
+            catch
+            {
+                throw new Exception("Error retrieving categories from cache.");
+            }
+            var categories = await _context.Categories.ToListAsync();
+            if (categories is null) return null;
+
+            await _cacheService.SetAsync(cacheKey, categories, TimeSpan.FromHours(1));
+
+            
             return _mapper.Map<IReadOnlyList<CategoryViewModel>>(categories);
         }
 
@@ -69,6 +89,8 @@ namespace IronFuel.Web.Services
             var category = _context.Categories.SingleOrDefault(c => c.Name == model.Name);
             return category is null || category.Id.Equals(model.Id);
         }
+
+        private async void InvalidateCache() => await _cacheService.RemoveAsync("categories_list");
 
 
     }

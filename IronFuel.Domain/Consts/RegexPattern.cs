@@ -2,6 +2,7 @@
 {
     public static class RegexPattern
     {
+        public const string VideoUrl = @"^(https?://.*\.(mp4|webm|ogg)(\?.*)?$|~/.*\.(mp4|webm|ogg)$)";
         public const string Password = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%*?&])[A-Za-z\d@#$!%*?&]{8,}$";
         public const string Username = @"^[a-zA-Z0-9\-._@+]+$";
         public const string PhoneNumber = @"^01[0,1,2,5]{1}[0-9]{8}$";

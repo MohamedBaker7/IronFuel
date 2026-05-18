@@ -2,7 +2,7 @@ namespace IronFuel.Web.Services
 {
     public interface IFlavorService
     {
-        IReadOnlyList<FlavorViewModel> GetFlavors();
+        Task<IReadOnlyList<FlavorViewModel>?> GetFlavors();
         FlavorFormViewModel? BuildEditModel(int id);
         FlavorViewModel Create(FlavorFormViewModel model);
         FlavorViewModel? Update(FlavorFormViewModel model);

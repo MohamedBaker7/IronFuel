@@ -1,10 +1,12 @@
 using IronFuel.Web.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 
 namespace IronFuel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [EnableRateLimiting("fixed")]
+    [Authorize(Roles = AppRoles.Admin)]
     public class BrandsController : Controller
     {
         private readonly IBrandService _brandService;
@@ -14,9 +16,9 @@ namespace IronFuel.Web.Areas.Admin.Controllers
             _brandService = brandService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var brands = _brandService.GetBrands();
+            var brands = await _brandService.GetBrands();
             return View(brands);
         }
 

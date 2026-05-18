@@ -9,7 +9,7 @@ namespace IronFuel.Web.Core.ViewModels
     {
         public int Id { get; set; }
 
-        [Required, Display(Name = "Name"), MaxLength(200,ErrorMessage = Errors.MaxLength)]
+        [Required, Display(Name = "Name"), MaxLength(200, ErrorMessage = Errors.MaxLength)]
         [Remote(action: "AllowedItem", controller: "Products", areaName: "Admin", AdditionalFields = "Id,BrandId", ErrorMessage = Errors.DuplicatedProducts)]
         public string Name { get; set; } = null!;
 
@@ -31,6 +31,17 @@ namespace IronFuel.Web.Core.ViewModels
 
         [Display(Name = "Suggested use")]
         public string? SuggestedUse { get; set; }
+
+        /// <summary>Stored relative URL (e.g. ~/Videos/productVideos/{id}/file.mp4). Round-tripped on edit.</summary>
+        [Display(Name = "Product video URL")]
+        [MaxLength(2048, ErrorMessage = "URL must not exceed 2048 characters.")]
+        public string? VideoUrl { get; set; }
+
+        [Display(Name = "Product video")]
+        public IFormFile? ProductVideo { get; set; }
+
+        [Display(Name = "Remove current video")]
+        public bool RemoveProductVideo { get; set; }
 
         [MinLength(1, ErrorMessage = "Add at least one product variant.")]
         public IList<ProductVariantInputViewModel> Variants { get; set; } = new List<ProductVariantInputViewModel>

@@ -79,3 +79,159 @@
         ]
     });
 });
+
+
+
+(() => {
+    const container = document.getElementById("variants-container");
+    const addButton = document.getElementById("add-variant-btn");
+    const template = document.getElementById("variant-template");
+
+    if (!container || !addButton || !template) {
+        return;
+    }
+
+    const reindexVariantRows = () => {
+        const rows = container.querySelectorAll(".variant-row");
+
+        rows.forEach((row, index) => {
+            row.querySelectorAll("[data-variant-field]").forEach((field) => {
+                const fieldName = field.getAttribute("data-variant-field");
+                field.name = `Variants[${index}].${fieldName}`;
+                field.id = `Variants_${index}__${fieldName}`;
+            });
+        });
+    };
+
+    addButton.addEventListener("click", () => {
+        const fragment = template.content.cloneNode(true);
+        container.prepend(fragment);
+        reindexVariantRows();
+    });
+
+    container.addEventListener("click", (event) => {
+        const button = event.target.closest(".remove-variant-btn");
+        if (!button) {
+            return;
+        }
+
+        const rows = container.querySelectorAll(".variant-row");
+        if (rows.length === 1) {
+            return;
+        }
+
+        button.closest(".variant-row")?.remove();
+        reindexVariantRows();
+    });
+
+    const existingImagesContainer = document.getElementById("existing-images-list");
+    const removedImageIdsInput = document.getElementById("RemovedImageIds");
+    const existingOrderInput = document.getElementById("ExistingImageOrder");
+    const removedIds = new Set();
+
+    const syncImageState = () => {
+        if (!existingImagesContainer || !removedImageIdsInput || !existingOrderInput) {
+            return;
+        }
+
+        const orderedIds = [...existingImagesContainer.querySelectorAll(".existing-image-item")]
+            .map((item) => item.getAttribute("data-image-id"))
+            .filter((id) => id);
+
+        existingOrderInput.value = orderedIds.join(",");
+        removedImageIdsInput.value = [...removedIds].join(",");
+    };
+
+    if (existingImagesContainer) {
+        existingImagesContainer.addEventListener("click", (event) => {
+            const item = event.target.closest(".existing-image-item");
+            if (!item) {
+                return;
+            }
+
+            if (event.target.closest(".js-image-remove")) {
+                removedIds.add(item.getAttribute("data-image-id"));
+                item.remove();
+                syncImageState();
+                return;
+            }
+
+            if (event.target.closest(".js-image-up")) {
+                const prev = item.previousElementSibling;
+                if (prev) {
+                    existingImagesContainer.insertBefore(item, prev);
+                    syncImageState();
+                }
+                return;
+            }
+
+            if (event.target.closest(".js-image-down")) {
+                const next = item.nextElementSibling;
+                if (next) {
+                    existingImagesContainer.insertBefore(next, item);
+                    syncImageState();
+                }
+            }
+        });
+
+        syncImageState();
+    }
+})();
+
+
+
+(() => {
+    const fileInput = document.getElementById('ProductVideo');
+    const preview = document.getElementById('videoPreview');
+    const source = document.getElementById('videoPreviewSource');
+    const player = document.getElementById('videoPreviewPlayer');
+    const removeCheckbox = document.getElementById('RemoveProductVideo');
+    const existingWrap = document.getElementById('existingProductVideoWrap');
+
+    let objectUrl = null;
+
+    const revokeObjectUrl = () => {
+        if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+            objectUrl = null;
+        }
+    };
+
+    const mimeForFile = (name) => {
+        const n = (name || '').toLowerCase();
+        if (n.endsWith('.webm')) return 'video/webm';
+        if (n.endsWith('.ogg')) return 'video/ogg';
+        return 'video/mp4';
+    };
+
+    fileInput?.addEventListener('change', function () {
+        const file = this.files && this.files[0];
+        revokeObjectUrl();
+
+        if (!file || !preview || !source || !player) {
+            if (preview) preview.classList.add('d-none');
+            if (existingWrap) existingWrap.classList.remove('d-none');
+            return;
+        }
+
+        if (removeCheckbox) removeCheckbox.checked = false;
+
+        objectUrl = URL.createObjectURL(file);
+        source.src = objectUrl;
+        source.type = mimeForFile(file.name);
+        player.load();
+        preview.classList.remove('d-none');
+        if (existingWrap) existingWrap.classList.add('d-none');
+    });
+
+    removeCheckbox?.addEventListener('change', function () {
+        if (this.checked) {
+            revokeObjectUrl();
+            if (fileInput) fileInput.value = '';
+            if (preview) preview.classList.add('d-none');
+            if (source) source.src = '';
+        } else if (existingWrap) {
+            existingWrap.classList.remove('d-none');
+        }
+    });
+})();

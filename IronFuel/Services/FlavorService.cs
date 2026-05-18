@@ -5,17 +5,36 @@ namespace IronFuel.Web.Services
     public class FlavorService : IFlavorService
     {
         private readonly IApplicationDbContext _context;
+        private readonly CacheService _cacheService;
         private readonly IMapper _mapper;
 
-        public FlavorService(IApplicationDbContext context, IMapper mapper)
+        public FlavorService(IApplicationDbContext context, CacheService cacheService, IMapper mapper)
         {
             _context = context;
+            _cacheService = cacheService;
             _mapper = mapper;
         }
 
-        public IReadOnlyList<FlavorViewModel> GetFlavors()
+        public async Task<IReadOnlyList<FlavorViewModel>?> GetFlavors()
         {
-            var flavors = _context.Flavors.ToList();
+            var cacheKey = "flavors_list";
+
+            try
+            {
+                var cached = await _cacheService.GetAsync<IReadOnlyList<Flavour>>(cacheKey);
+                if (cached is not null)
+                    return _mapper.Map<IReadOnlyList<FlavorViewModel>>(cached);
+
+            }
+            catch
+            {
+                throw new Exception("Error retrieving flavors from cache.");
+            }
+            var flavors = await _context.Flavors.ToListAsync();
+            if (flavors is null) return null;
+
+            await _cacheService.SetAsync(cacheKey, flavors, TimeSpan.FromHours(1));
+
             return _mapper.Map<IReadOnlyList<FlavorViewModel>>(flavors);
         }
 

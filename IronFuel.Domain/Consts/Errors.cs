@@ -26,6 +26,9 @@ namespace IronFuel.Domain.Consts
         public const string InvalidNationalId = "Invalid National ID.";
         public const string EmptyGalleryImages = "At least one gallery image is required.";
         public const string EmptyImage = "Image file cannot be empty.";
+        public const string InvalidVideoUrl = "Please enter a valid video URL ending in .mp4, .webm, or .ogg.";
+        public const string InvalidVideoExtension = "Supported video formats: .mp4, .webm, .ogg.";
+        public const string VideoMaximumSize = "Video must be 50 MB or smaller.";
         public const string InvalidStartDate = "Invalid Start Date.";
         public const string InvalidEndDate = "Invalid End Date.";
         public const string DuplicatedProducts = "This product already exists for this brand. Please choose a different name.";

@@ -2,15 +2,15 @@
 
 
 <li class="mt-2">
-    <a class="dropdown-item fw-bold bg-black" href="#">
-        <div class="swap w-fit">
+    <a class="dropdown-item fw-bold bg-inherit" href="#">
+        <div class="swap-light w-fit">
             Offers
         </div>
     </a>
 </li>
 <li class="mt-2">
-    <a class="dropdown-item fw-bold bg-black" asp-area="" asp-controller="Products" asp-action="Index">
-        <div class="swap w-fit">
+    <a class="dropdown-item fw-bold bg-inherit" asp-area="" asp-controller="Products" asp-action="Index">
+        <div class="swap-light w-fit">
             All Products
         </div>
     </a>
@@ -19,8 +19,8 @@
 @foreach (var item in Model)
 {   
     <li class="mt-2">
-        <a class="dropdown-item fw-bold bg-black" asp-area="" asp-controller="Products" asp-action="Index" asp-route-categoryId="@item.Id" asp-route-categoryName="@item.Name">
-            <div class="swap w-fit">
+        <a class="dropdown-item fw-bold bg-inherit" asp-area="" asp-controller="Products" asp-action="Index" asp-route-categoryId="@item.Id" asp-route-categoryName="@item.Name">
+            <div class="swap-light w-fit">
                 @item.Name
             </div>
         </a>

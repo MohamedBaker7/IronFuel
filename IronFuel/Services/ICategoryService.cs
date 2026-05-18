@@ -2,7 +2,8 @@
 {
     public interface ICategoryService
     {
-        IReadOnlyList<CategoryViewModel> GetCategories();
+        
+        Task<IReadOnlyList<CategoryViewModel>?> GetCategories();
         CategoryFormViewModel? BuildEditModel(int id);
 
         CategoryViewModel Create(CategoryFormViewModel model);

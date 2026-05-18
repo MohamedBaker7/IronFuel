@@ -2,7 +2,7 @@ namespace IronFuel.Web.Services
 {
     public interface IBrandService
     {
-        IReadOnlyList<BrandViewModel> GetBrands();
+        Task<IReadOnlyList<BrandViewModel>?> GetBrands();
         BrandFormViewModel? BuildEditModel(int id);
         BrandViewModel Create(BrandFormViewModel model);
         BrandViewModel? Update(BrandFormViewModel model);

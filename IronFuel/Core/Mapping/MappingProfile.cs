@@ -30,6 +30,19 @@ namespace IronFuel.Web.Core.Mapping
             CreateMap<Category, CategoryNavViewModel>();
             // Variants
             CreateMap<ProductVariant, ProductVariantViewModel>();
+
+            // Cart & Orders
+            CreateMap<Cart, CartViewModel>();
+            CreateMap<CartItem, CartItemViewModel>()
+                .ForMember(d => d.ProductName, opt => opt.MapFrom(s => s.ProductVariant.Product.Name))
+                .ForMember(d => d.FlavourName, opt => opt.MapFrom(s => s.ProductVariant.Flavour.Name))
+                .ForMember(d => d.WeightG, opt => opt.MapFrom(s => s.ProductVariant.WeightG));
+
+            CreateMap<Order, OrderViewModel>();
+            CreateMap<OrderItem, OrderItemViewModel>()
+                .ForMember(d => d.ProductName, opt => opt.MapFrom(s => s.ProductVariant.Product.Name))
+                .ForMember(d => d.FlavourName, opt => opt.MapFrom(s => s.ProductVariant.Flavour.Name))
+                .ForMember(d => d.WeightG, opt => opt.MapFrom(s => s.ProductVariant.WeightG));
         }
     }
 }
