@@ -13,5 +13,8 @@
         public decimal Price { get; set; }
         public int Stock { get; set; }
 
+        [MaxLength(50)]
+        public string SKU { get; set; } = string.Empty;
+
     }
 }

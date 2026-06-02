@@ -8,7 +8,7 @@ namespace IronFuel.Web.Core.ViewModels
 
         [MaxLength(200, ErrorMessage = Errors.MaxLength)]
         [Display(Name = "Category")]
-        [Remote("AllowedItem", "Categories", AdditionalFields = "Id", ErrorMessage = Errors.Duplicated),
+        [Remote("AllowedItem", "Categories", AdditionalFields = nameof(Id), ErrorMessage = Errors.Duplicated),
             RegularExpression(RegexPattern.CharactersOnly_Eng, ErrorMessage = Errors.OnlyEnglishLetters)]
         public string Name { get; set; } = null!;
     }

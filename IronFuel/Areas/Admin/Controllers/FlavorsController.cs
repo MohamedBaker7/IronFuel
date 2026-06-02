@@ -71,10 +71,20 @@ namespace IronFuel.Web.Areas.Admin.Controllers
             return Ok(lastUpdatedOn);
         }
 
-        public IActionResult AllowedItem(FlavorFormViewModel model)
+        public IActionResult AllowedName(FlavorFormViewModel model)
         {
-            var isAllowed = _flavorService.AllowedItem(model);
+            var isAllowed = _flavorService.AllowedName(model);
             return Json(isAllowed);
+        }
+        public IActionResult AllowedCode(FlavorFormViewModel model)
+        {
+            if (!_flavorService.AllowedCode(model)) // Not Allowed Code
+                return Json("Flavour code is already taken.");
+
+            if (_flavorService.IsCodeUsedInSKU(model)) // Used Sku
+                return Json($"This code is already used in existing SKUs and cannot be changed.");
+
+            return Json(true); // Allowed Code
         }
     }
 }

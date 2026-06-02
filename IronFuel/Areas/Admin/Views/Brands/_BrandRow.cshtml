@@ -2,6 +2,7 @@
 
 <tr>
     <td>@Model.Name</td>
+    <td>@Model.Code</td>
     <td>
         <span class="badge text-@(Model.IsDeleted ? "danger" : "black") fw-bold py-2 js-status">
             @(Model.IsDeleted ? "Deleted" : "Available")

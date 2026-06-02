@@ -6,6 +6,8 @@ namespace IronFuel.Web.Test.Services
         private readonly IApplicationDbContext _context;
         private readonly IMemoryCache _cache;
         private readonly IMapper _mapper;
+        private readonly ISKUGenerator _skuGenerator;
+
 
         private readonly Mock<IImageService> _imageServiceMock;
 
@@ -28,9 +30,11 @@ namespace IronFuel.Web.Test.Services
 
             _mapper = mapperConfig.CreateMapper();
 
+            _skuGenerator = new SKUGenerator();
+
             _imageServiceMock = new Mock<IImageService>();
 
-            _sut = new ProductService(_context, _cache, _mapper, _imageServiceMock.Object);
+            _sut = new ProductService(_context, _cache, _mapper, _imageServiceMock.Object, _skuGenerator);
         }
 
 
@@ -452,7 +456,7 @@ namespace IronFuel.Web.Test.Services
 
 
         [Fact]
-        public async Task GetVariantSelectionDataAsync_WhenVariantsExist_ReturnsSizesAndPrice()
+        public async Task GetSizesSelectionDataAsync_WhenVariantsExist_ReturnsSizesAndPrice()
         {
             // Arrange
             SeedCategory();
@@ -462,14 +466,13 @@ namespace IronFuel.Web.Test.Services
             SeedVariant(productId: 1, flavourId: 1, weightG: 1000, price: 29.99m);
 
             // Act
-            var (sizes, price) = await _sut.GetVariantSelectionDataAsync(1, 1, null);
+            var sizes = await _sut.GetSizesSelectionDataAsync(1, 1);
 
             // Assert
             Assert.NotEmpty(sizes);
-            Assert.Equal(29.99m, price);
         }
         [Fact]
-        public async Task GetVariantSelectionDataAsync_WhenNoVariants_ReturnsEmptyAndZeroPrice()
+        public async Task GetSizesSelectionDataAsync_WhenNoVariants_ReturnsEmptyAndZeroPrice()
         {
             // Arrange — product exists but no variants for this flavour
             SeedCategory();
@@ -477,31 +480,13 @@ namespace IronFuel.Web.Test.Services
             SeedProduct(id: 1);
 
             // Act
-            var (sizes, price) = await _sut.GetVariantSelectionDataAsync(1, 99, null);
+            var sizes = await _sut.GetSizesSelectionDataAsync(1, 99);
 
             // Assert
             Assert.Empty(sizes);
-            Assert.Equal(0m, price);
         }
         [Fact]
-        public async Task GetVariantSelectionDataAsync_WithSpecificWeight_ReturnsCorrectPrice()
-        {
-            // Arrange — two variants with different weights and prices
-            SeedCategory();
-            SeedBrand();
-            SeedFlavour(id: 1);
-            SeedProduct(id: 1);
-            SeedVariant(productId: 1, flavourId: 1, weightG: 1000, price: 29.99m);
-            SeedVariant(productId: 1, flavourId: 1, weightG: 2000, price: 49.99m);
-
-            // Act — ask specifically for the 2kg variant
-            var (sizes, price) = await _sut.GetVariantSelectionDataAsync(1, 1, 2000);
-
-            // Assert — should return the 2kg price, not the 1kg one
-            Assert.Equal(49.99m, price);
-        }
-        [Fact]
-        public async Task GetVariantSelectionDataAsync_WhenWeightIsNull_ReturnsFirstVariantPrice()
+        public async Task GetSizesSelectionDataAsync_WhenWeightIsNull_ReturnsFirstVariantPrice()
         {
             // Arrange — two variants, weightG null means "pick the first one"
             SeedCategory();
@@ -512,14 +497,13 @@ namespace IronFuel.Web.Test.Services
             SeedVariant(productId: 1, flavourId: 1, weightG: 1000, price: 29.99m);
 
             // Act — no weight specified → defaults to smallest weight (500g)
-            var (sizes, price) = await _sut.GetVariantSelectionDataAsync(1, 1, null);
+            var sizes = await _sut.GetSizesSelectionDataAsync(1, 1);
 
             // Assert
             Assert.Equal(2, sizes.Count);       // both sizes returned
-            Assert.Equal(15.99m, price);        // price of smallest weight
         }
         [Fact]
-        public async Task GetVariantSelectionDataAsync_ExcludesDeletedVariants()
+        public async Task GetSizesSelectionDataAsync_ExcludesDeletedVariants()
         {
             // Arrange — one active, one deleted variant
             SeedCategory();
@@ -530,11 +514,10 @@ namespace IronFuel.Web.Test.Services
             SeedVariant(productId: 1, flavourId: 1, weightG: 2000, price: 49.99m, isDeleted: true);
 
             // Act
-            var (sizes, price) = await _sut.GetVariantSelectionDataAsync(1, 1, null);
+            var sizes = await _sut.GetSizesSelectionDataAsync(1, 1);
 
             // Assert — deleted variant should not appear
             Assert.Single(sizes);
-            Assert.Equal(29.99m, price);
         }
     }
 }

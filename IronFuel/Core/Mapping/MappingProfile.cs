@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace IronFuel.Web.Core.Mapping
 {
@@ -34,9 +35,13 @@ namespace IronFuel.Web.Core.Mapping
             // Cart & Orders
             CreateMap<Cart, CartViewModel>();
             CreateMap<CartItem, CartItemViewModel>()
+                .ForMember(d => d.ProductId, opt => opt.MapFrom(s => s.ProductVariant.Product.Id))
                 .ForMember(d => d.ProductName, opt => opt.MapFrom(s => s.ProductVariant.Product.Name))
+                .ForMember(d => d.ProductImage, opt => opt.MapFrom(s => s.ProductVariant.Product.Images.OrderBy(i => i.SortOrder).FirstOrDefault()!.RelativePath ?? string.Empty))
+                .ForMember(d => d.Servings, opt => opt.MapFrom(s => s.ProductVariant.ServingsPerContainer))
                 .ForMember(d => d.FlavourName, opt => opt.MapFrom(s => s.ProductVariant.Flavour.Name))
                 .ForMember(d => d.WeightG, opt => opt.MapFrom(s => s.ProductVariant.WeightG));
+
 
             CreateMap<Order, OrderViewModel>();
             CreateMap<OrderItem, OrderItemViewModel>()

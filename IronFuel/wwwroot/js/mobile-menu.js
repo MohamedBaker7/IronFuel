@@ -44,10 +44,12 @@ $(document).ready(function () {
     });
 });
 
+const isCartPage = window.location.pathname.includes('/Cart');
+
 // run on load
-updateSwapClass();
+if (!isCartPage) updateSwapClass();
 
 // run on resize
 $(window).on('resize', function () {
-    updateSwapClass();
+    if (!isCartPage) updateSwapClass();
 });

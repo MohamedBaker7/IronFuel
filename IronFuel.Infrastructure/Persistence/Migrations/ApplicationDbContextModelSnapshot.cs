@@ -17,7 +17,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.7")
+                .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -118,6 +118,11 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<string>("CreatedById")
                         .HasColumnType("nvarchar(450)");
 
@@ -147,6 +152,9 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("LastUpdatedById");
@@ -154,7 +162,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.Cart", b =>
@@ -165,6 +173,9 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<Guid>("CartToken")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("CreatedById")
                         .HasColumnType("nvarchar(450)");
 
@@ -172,6 +183,9 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -184,20 +198,25 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("NULL");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("Status")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CartToken")
+                        .IsUnique();
 
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("LastUpdatedById");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.CartItem", b =>
@@ -236,6 +255,10 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -251,7 +274,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                     b.HasIndex("CartId", "ProductVariantId")
                         .IsUnique();
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.Category", b =>
@@ -295,7 +318,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.Flavour", b =>
@@ -305,6 +328,11 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("CreatedById")
                         .HasColumnType("nvarchar(450)");
@@ -332,6 +360,9 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Code")
+                        .IsUnique();
+
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("LastUpdatedById");
@@ -339,7 +370,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Flavors");
+                    b.ToTable("Flavors", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.Order", b =>
@@ -403,7 +434,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.OrderItem", b =>
@@ -457,7 +488,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                     b.HasIndex("OrderId", "ProductVariantId")
                         .IsUnique();
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.Product", b =>
@@ -476,6 +507,11 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
 
                     b.Property<string>("CreatedById")
                         .HasColumnType("nvarchar(450)");
@@ -525,7 +561,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                     b.HasIndex("Name", "BrandId")
                         .IsUnique();
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.ProductImage", b =>
@@ -551,7 +587,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("IronFuel.Domain.Entities.ProductVariant", b =>
@@ -591,6 +627,11 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<string>("SKU")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<int>("ServingSizeG")
                         .HasColumnType("int");
 
@@ -613,10 +654,13 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("LastUpdatedById");
 
+                    b.HasIndex("SKU")
+                        .IsUnique();
+
                     b.HasIndex("ProductId", "FlavourId", "WeightG")
                         .IsUnique();
 
-                    b.ToTable("ProductVariants");
+                    b.ToTable("ProductVariants", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -782,7 +826,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                             b1.HasIndex("ApplicationUserId");
 
-                            b1.ToTable("RefreshToken");
+                            b1.ToTable("RefreshToken", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("ApplicationUserId");
@@ -822,9 +866,7 @@ namespace IronFuel.Infrastructure.Persistence.Migrations
 
                     b.HasOne("IronFuel.Domain.Entities.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("CreatedBy");
 

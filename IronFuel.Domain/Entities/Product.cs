@@ -8,6 +8,8 @@ namespace IronFuel.Domain.Entities
 
         [MaxLength(200)]
         public string Name { get; set; } = null!;
+        [MaxLength(10)]
+        public string Code { get; set; } = null!; // we will convert this to required future
         public int CategoryId { get; set; }
         public Category? Category { get; set; }
         public int BrandId { get; set; }

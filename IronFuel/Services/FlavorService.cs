@@ -41,7 +41,16 @@ namespace IronFuel.Web.Services
         public FlavorFormViewModel? BuildEditModel(int id)
         {
             var flavor = _context.Flavors.Find(id);
-            return flavor is null ? null : _mapper.Map<FlavorFormViewModel>(flavor);
+
+            if (flavor is null) return null;
+
+            var viewModel = _mapper.Map<FlavorFormViewModel>(flavor);
+
+            viewModel.IsCodeLocked = _context.ProductVariants
+            .Any(v => v.SKU.Contains("-" + flavor.Code + "-"));
+
+            return viewModel;
+
         }
 
         public FlavorViewModel Create(FlavorFormViewModel model)
@@ -49,6 +58,8 @@ namespace IronFuel.Web.Services
             var flavor = _mapper.Map<Flavour>(model);
             _context.Flavors.Add(flavor);
             _context.SaveChanges();
+
+            InvalidateCache();
             return _mapper.Map<FlavorViewModel>(flavor);
         }
 
@@ -62,6 +73,7 @@ namespace IronFuel.Web.Services
             flavor.LastUpdatedOn = DateTime.UtcNow;
             _context.SaveChanges();
 
+            InvalidateCache();
             return _mapper.Map<FlavorViewModel>(flavor);
         }
 
@@ -74,13 +86,35 @@ namespace IronFuel.Web.Services
             flavor.IsDeleted = !flavor.IsDeleted;
             flavor.LastUpdatedOn = DateTime.UtcNow;
             _context.SaveChanges();
+
+            InvalidateCache();
             return (true, flavor.LastUpdatedOn?.ToString("MMM dd, yyyy"));
         }
 
-        public bool AllowedItem(FlavorFormViewModel model)
+        public bool AllowedName(FlavorFormViewModel model)
         {
-            var flavor = _context.Flavors.SingleOrDefault(f => f.Name == model.Name);
-            return flavor is null || flavor.Id.Equals(model.Id);
+            var flavour = _context.Flavors.SingleOrDefault(f => f.Name == model.Name);
+            return flavour is null || flavour.Id.Equals(model.Id);
         }
+
+        public bool AllowedCode(FlavorFormViewModel model)
+        {
+            var flavour = _context.Flavors.SingleOrDefault(f => f.Code == model.Code);
+            return flavour is null || flavour.Id.Equals(model.Id);
+
+        }
+
+        public bool IsCodeUsedInSKU(FlavorFormViewModel model)
+        {
+            var flavour = _context.Flavors.Find(model.Id);
+
+            if (flavour is null || flavour.Code == model.Code.ToUpper())
+                return false;  // no change — safe
+
+            return _context.ProductVariants
+                .Any(v => v.SKU.Contains("-" + flavour.Code + "-"));
+        }
+
+        private async void InvalidateCache() => await _cacheService.RemoveAsync("flavors_list");
     }
 }

@@ -7,7 +7,7 @@ namespace IronFuel.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [EnableRateLimiting("fixed")]
-    //[Authorize(Roles = AppRoles.Admin)]
+    [Authorize(Roles = AppRoles.Admin)]
     public class ProductsController : Controller
     {
         private readonly IProductService _productService;

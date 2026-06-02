@@ -13,6 +13,12 @@ namespace IronFuel.Web.Core.ViewModels
         [Remote(action: "AllowedItem", controller: "Products", areaName: "Admin", AdditionalFields = "Id,BrandId", ErrorMessage = Errors.DuplicatedProducts)]
         public string Name { get; set; } = null!;
 
+        [Required, Display(Name = "Code"), MaxLength(6, ErrorMessage = Errors.MaxLength)]
+        [RegularExpression(RegexPattern.CharactersOnly_Eng, ErrorMessage = Errors.OnlyEnglishLetters)]
+        public string Code { get; set; } = null!;
+
+        public bool IsCodeLocked { get; set; }
+
         [Range(1, int.MaxValue, ErrorMessage = "Select a category.")]
         [Display(Name = "Category")]
         public int CategoryId { get; set; }

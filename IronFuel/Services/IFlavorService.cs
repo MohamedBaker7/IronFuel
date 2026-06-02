@@ -7,6 +7,8 @@ namespace IronFuel.Web.Services
         FlavorViewModel Create(FlavorFormViewModel model);
         FlavorViewModel? Update(FlavorFormViewModel model);
         (bool success, string? lastUpdateOn) ToggleStatus(int id);
-        bool AllowedItem(FlavorFormViewModel model);
+        bool AllowedName(FlavorFormViewModel model);
+        bool AllowedCode(FlavorFormViewModel model);
+        bool IsCodeUsedInSKU(FlavorFormViewModel model);
     }
 }

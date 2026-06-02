@@ -1,6 +1,6 @@
 ﻿<div>
     <ul class="navbar-nav flex-grow-1 text-uppercase">
-        @if (!User.IsInRole(AppRoles.Admin))
+        @if (User.IsInRole(AppRoles.Admin))
         {
             <li class="bg-inherit me-2 dropdown desktop-nav">
                 <a class="nav-link dropdown-toggle text-light" href="#">Manage</a>

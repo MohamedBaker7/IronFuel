@@ -27,27 +27,34 @@
 <body>
     <header class="fixed-top">
         @if (ViewData["HideNavbar"] == null || !(bool)ViewData["HideNavbar"]!)
-            {
-                <partial name="_NavBar"></partial>
-            }               
-    </header>
-    <div class="container-fluid d-flex justify-content-center pb-3 px-0">
-        <main role="main" class="w-100">
+        {
+            <partial name="_NavBar"></partial>
+            }
+        </header>
+
+        <div class="container-fluid d-flex justify-content-center pb-3 px-0">
+            <main role="main" class="w-100">
                 @RenderBody()
                 <partial name="_Modal" />
-        </main>
-    </div>
+            </main>
+        </div>
+
+       
+
+        <partial name="_CartSummaryOffcanvas" />
+
+        <partial name="_CartOffcanvas" />
 
             
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/lib/select2/js/select2.min.js"></script>
-    <script src="~/lib/bootbox.js/bootbox.min.js"></script>
-    <script src="~/lib/toastr.js/toastr.min.js"></script>
-    <script src="~/lib/datatables/js/jquery.datatables.min.js"></script>
-    <script src="~/lib/datatables/js/datatables.bootstrap4.min.js"></script>
-    <script src="~/js/mobile-menu.js" asp-append-version="true"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/lib/select2/js/select2.min.js"></script>
+        <script src="~/lib/bootbox.js/bootbox.min.js"></script>
+        <script src="~/lib/toastr.js/toastr.min.js"></script>
+        <script src="~/lib/datatables/js/jquery.datatables.min.js"></script>
+        <script src="~/lib/datatables/js/datatables.bootstrap4.min.js"></script>
+        <script src="~/js/mobile-menu.js" asp-append-version="true"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @await RenderSectionAsync("Scripts", required: false)
+    </body>
 </html>

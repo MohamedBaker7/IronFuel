@@ -32,6 +32,7 @@
         columns: [
             { "data": "id", "name": "Id", "className": "d-none" },
             { "data": "name", "name": "Name" },
+            { "data": "code", "name": "Code" },
             { "data": "category.name", "name": "Category" },
             { "data": "brand.name", "name": "Brand" },
             {
@@ -105,7 +106,7 @@
 
     addButton.addEventListener("click", () => {
         const fragment = template.content.cloneNode(true);
-        container.prepend(fragment);
+        container.append(fragment);
         reindexVariantRows();
     });
 

@@ -21,16 +21,21 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            var AllFKs = modelBuilder.Model
+            modelBuilder.Model
                 .GetEntityTypes()
                 .SelectMany(e => e.GetForeignKeys())
                 .Where(fk => fk.DeleteBehavior == DeleteBehavior.Cascade)
-                .ToList();
+                .ToList()
+                .ForEach(fk => fk.DeleteBehavior = DeleteBehavior.Restrict);
 
-            foreach (var fk in AllFKs)
-            {
-                fk.DeleteBehavior = DeleteBehavior.Restrict;
-            }
+
+            modelBuilder.Model.GetEntityTypes()
+                .SelectMany(e => e.GetProperties())
+                .Where(p => p.ClrType == typeof(string) && p.Name == "Name")
+                .ToList()
+                .ForEach(p => p.SetValueConverter(new PascalCaseConverter()));
+
+
 
             modelBuilder.Entity<ApplicationUser>().HasIndex(u => u.Email).IsUnique();
             modelBuilder.Entity<ApplicationUser>().HasIndex(u => u.UserName).IsUnique();
@@ -42,22 +47,31 @@
                     rt.HasKey("Id", "ApplicationUserId");
                 });
 
+
+            var upperCase = new UpperCaseConverter();
+
+
             modelBuilder.Entity<Brand>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Brand>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
             modelBuilder.Entity<Brand>().HasIndex(b => b.Name).IsUnique();
+            modelBuilder.Entity<Brand>().HasIndex(b => b.Code).IsUnique();
+            modelBuilder.Entity<Brand>().Property(b => b.Code).HasConversion(upperCase);
 
             modelBuilder.Entity<Category>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Category>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
             modelBuilder.Entity<Category>().HasIndex(c => c.Name).IsUnique();
 
+
             modelBuilder.Entity<Product>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Product>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
             modelBuilder.Entity<Product>().HasIndex(p => new { p.Name, p.BrandId }).IsUnique();
+            modelBuilder.Entity<Product>().Property(p => p.Code).HasConversion(upperCase);
 
 
             modelBuilder.Entity<ProductVariant>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<ProductVariant>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
             modelBuilder.Entity<ProductVariant>().HasIndex(pv => new { pv.ProductId, pv.FlavourId, pv.WeightG }).IsUnique();
+            modelBuilder.Entity<ProductVariant>().HasIndex(pv => pv.SKU).IsUnique();
             modelBuilder.Entity<ProductVariant>()
                 .Property(a => a.ServingsPerContainer)
                 .HasComputedColumnSql("(WeightG / NULLIF(ServingSizeG, 0))", stored: true);
@@ -68,10 +82,19 @@
             modelBuilder.Entity<Flavour>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Flavour>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
             modelBuilder.Entity<Flavour>().HasIndex(f => f.Name).IsUnique();
+            modelBuilder.Entity<Flavour>().HasIndex(f => f.Code).IsUnique();
+            modelBuilder.Entity<Flavour>().Property(f => f.Code).HasConversion(upperCase);
 
             modelBuilder.Entity<Cart>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<Cart>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
-            modelBuilder.Entity<Cart>().HasIndex(c => c.UserId).IsUnique();
+            modelBuilder.Entity<Cart>(entity =>
+            {
+                entity.HasIndex(c => c.CartToken).IsUnique();
+                entity.HasIndex(c => c.UserId);
+
+                entity.Property(c => c.Status)
+                      .HasConversion<string>();
+            });
 
             modelBuilder.Entity<CartItem>().Property(a => a.CreatedOn).HasDefaultValueSql("GETDATE()");
             modelBuilder.Entity<CartItem>().Property(a => a.LastUpdatedOn).HasDefaultValueSql("NULL");
@@ -105,12 +128,6 @@
                 .WithMany(p => p.Images)
                 .HasForeignKey(pi => pi.ProductId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Cart>()
-                .HasOne(c => c.User)
-                .WithMany()
-                .HasForeignKey(c => c.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<CartItem>()
                 .HasOne(ci => ci.Cart)

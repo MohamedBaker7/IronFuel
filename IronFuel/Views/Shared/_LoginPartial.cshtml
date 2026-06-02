@@ -2,13 +2,21 @@
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-<ul class="navbar-nav me-3">
-    <li class="nav-item">
+<ul class="navbar-nav flex-row me-2">
+    <li class="nav-item mx-2">
         <a class="nav-link text-light"
                href="@(SignInManager.IsSignedIn(User) ? "/Identity/Account/Orders" : "/Identity/Account/Login")">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="white" stroke-width="1.5" />
-                <path d="M20 21C20 18.2386 16.4183 16 12 16C7.58172 16 4 18.2386 4 21" stroke="white" stroke-width="1.5" stroke-linecap="round" />
+            <svg role="presentation" stroke-width="2" focusable="false" width="22" height="22" class="icon icon-account" viewBox="0 0 22 22">
+                <circle cx="11" cy="7" r="4" fill="none" stroke="currentColor"></circle>
+                <path d="M3.5 19c1.421-2.974 4.247-5 7.5-5s6.079 2.026 7.5 5" fill="none" stroke="currentColor" stroke-linecap="round"></path>
+            </svg>
+        </a>
+    </li>
+    <li class="nav-item mx-2">
+        <a id="ShowCartSummary" class="nav-link text-light" href="#">
+            <svg role="presentation" stroke-width="2" focusable="false" width="22" height="22" class="icon icon-cart" viewBox="0 0 22 22">
+                <path d="M9.182 18.454a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.818 0Zm7.272 0a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.819 0Z" fill="currentColor"></path>
+                <path d="M5.336 6.636H21l-3.636 8.182H6.909L4.636 3H1m8.182 15.454a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.818 0Zm7.272 0a.91.91 0 1 1-1.818 0 .91.91 0 0 1 1.819 0Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
             </svg>
         </a>
     </li>

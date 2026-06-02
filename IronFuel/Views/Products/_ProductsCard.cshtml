@@ -24,8 +24,6 @@ else
                        style="background-image: url(@(product.PrimaryImage));">
                 </a>
                 <div class="fs-5 fw-bold">@product.Name</div>
-                <div class="mb-2 fs-6 text-muted">Rating</div>
-                <div class="mb-2 fs-6 text-muted">1245 Reviews</div>
                 <div class="mb-2">@(product.LowestPrice == 0 ? string.Empty : $"{product.LowestPrice} EGP") </div>
 
             </div>

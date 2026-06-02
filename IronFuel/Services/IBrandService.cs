@@ -7,6 +7,9 @@ namespace IronFuel.Web.Services
         BrandViewModel Create(BrandFormViewModel model);
         BrandViewModel? Update(BrandFormViewModel model);
         (bool success, string? lastUpdateOn) ToggleStatus(int id);
-        bool AllowedItem(BrandFormViewModel model);
+        bool AllowedName(BrandFormViewModel model);
+        bool AllowedCode(BrandFormViewModel model);
+
+        bool IsCodeUsedInSKU(BrandFormViewModel model);
     }
 }

@@ -1,0 +1,49 @@
+﻿<div class="offcanvas offcanvas-end"
+     tabindex="-1"
+     id="cartOffcanvas"
+     aria-labelledby="cartOffcanvasLabel">
+
+    <div class="offcanvas-header py-4 px-5">
+        <h5 class="offcanvas-title fw-bold fs-3" id="cartOffcanvasLabel">
+            Cart
+        </h5>
+        <button type="button"
+                class="btn-close shadow-none"
+                data-bs-dismiss="offcanvas"
+                aria-label="Close">
+        </button>
+    </div>
+
+    <div class="offcanvas-body p-0" id="cartOffcanvasBody">
+        
+        {{-- cart items will load here --}}
+    </div>
+
+    <div class="offcanvas-footer border-top p-4 pt-1" id="cartSummaryFooter">
+        <div class="row d-flex p-3">
+            <span class="col fw-bold fs-3 ps-0">Total</span>
+            <span class="col fw-bold fs-5 text-end" id="cartOffcanvasTotal">Price will be here</span>
+            <p class="row text-muted">
+                Tax included and shipping calculated at checkout
+            </p>
+        </div>
+        <div class="row">
+            <a asp-controller="Cart" asp-action="Index"
+                   class="col btn btn-outline-dark rounded-0 py-3 fw-bold text-uppercase m-2">
+                View Cart
+            </a>
+            <a asp-controller="CheckOut" asp-action="Index"
+                   class="col btn btn-dark rounded-0 py-3 fw-bold text-uppercase m-2">
+                <span class="me-2">
+                    <svg role="presentation" fill="none" focusable="false" stroke-width="2" width="18" height="18" class="icon icon-picto-lock" viewBox="0 0 24 24">
+                        <path d="M3.236 18.182a5.071 5.071 0 0 0 4.831 4.465 114.098 114.098 0 0 0 7.865-.001 5.07 5.07 0 0 0 4.831-4.464 23.03 23.03 0 0 0 .165-2.611c0-.881-.067-1.752-.165-2.61a5.07 5.07 0 0 0-4.83-4.465c-1.311-.046-2.622-.07-3.933-.069a109.9 109.9 0 0 0-3.933.069 5.07 5.07 0 0 0-4.83 4.466 23.158 23.158 0 0 0-.165 2.609c0 .883.067 1.754.164 2.61Z" fill="currentColor" fill-opacity=".12" stroke="currentColor"></path>
+                        <path d="M17 8.43V6.285A5 5 0 0 0 7 6.286V8.43" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M12 17.714a2.143 2.143 0 1 0 0-4.286 2.143 2.143 0 0 0 0 4.286Z" stroke="currentColor"></path>
+                    </svg>
+                </span>
+                Check Out
+            </a>
+        </div>
+    </div>
+
+</div>

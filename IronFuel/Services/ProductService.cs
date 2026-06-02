@@ -1,5 +1,6 @@
 using IronFuel.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
 using System.Linq.Dynamic.Core;
 
 namespace IronFuel.Web.Services
@@ -20,13 +21,15 @@ namespace IronFuel.Web.Services
         private readonly IMemoryCache _cache;
         private readonly IMapper _mapper;
         private readonly IImageService _imageService;
+        private readonly ISKUGenerator _skuGenerator;
 
-        public ProductService(IApplicationDbContext context, IMemoryCache cache, IMapper mapper, IImageService imageService)
+        public ProductService(IApplicationDbContext context, IMemoryCache cache, IMapper mapper, IImageService imageService, ISKUGenerator skuGenerator)
         {
             _context = context;
             _cache = cache;
             _mapper = mapper;
             _imageService = imageService;
+            _skuGenerator = skuGenerator;
         }
 
         public ProductsPageViewModel GetProductsPage(int? categoryId, string? categoryName)
@@ -178,6 +181,7 @@ namespace IronFuel.Web.Services
             {
                 Id = product.Id,
                 Name = product.Name,
+                Code = product.Code,
                 CategoryId = product.CategoryId,
                 BrandId = product.BrandId,
                 Description = product.Description,
@@ -239,16 +243,37 @@ namespace IronFuel.Web.Services
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            var variants = model.Variants.Select(v => new ProductVariant
+
+            var flavoursIds = model.Variants.Select(v => v.FlavourId).Distinct().ToList();
+
+            var flavours = _context.Flavors.Where(f => flavoursIds.Contains(f.Id)).ToDictionary(f => f.Id);
+
+            var missingFlavours = flavoursIds.Except(flavours.Keys).ToList();
+
+            if (missingFlavours.Any())
+                throw new InvalidOperationException(
+                    $"Flavours not found: {string.Join(", ", missingFlavours)}");
+
+            var variants = model.Variants.Select(v =>
             {
-                ProductId = product.Id,
-                FlavourId = v.FlavourId,
-                WeightG = v.WeightG,
-                ServingSizeG = v.ServingSizeG,
-                ServingsPerContainer = v.ServingSizeG > 0 ? (int)Math.Round((decimal)v.WeightG / v.ServingSizeG) : 0,
-                Price = v.Price,
-                Stock = v.Stock,
-                IsDeleted = false
+                var flavour = flavours[v.FlavourId];
+
+                var servingsPerContainer = v.ServingSizeG > 0
+                    ? (int)Math.Round((decimal)v.WeightG / v.ServingSizeG)
+                    : 0;
+
+                return new ProductVariant
+                {
+                    ProductId = product.Id,
+                    FlavourId = v.FlavourId,
+                    WeightG = v.WeightG,
+                    ServingSizeG = v.ServingSizeG,
+                    ServingsPerContainer = servingsPerContainer,
+                    Price = v.Price,
+                    Stock = v.Stock,
+                    SKU = _skuGenerator.Generate(product.Brand!.Code, model.Code, flavour.Code, v.WeightG),
+                    IsDeleted = false
+                };
             }).ToList();
 
             if (variants.Count > 0)
@@ -285,6 +310,7 @@ namespace IronFuel.Web.Services
                 return (false, nameof(model.GalleryImages), imageValidation.errorMessage);
 
             var product = await _context.Products
+                .Include(p => p.Brand)
                 .Include(p => p.Variants)
                 .Include(p => p.Images)
                 .SingleOrDefaultAsync(p => p.Id == id);
@@ -304,17 +330,39 @@ namespace IronFuel.Web.Services
                 return (false, videoResult.ErrorKey, videoResult.ErrorMessage);
 
             _context.ProductVariants.RemoveRange(product.Variants);
-            var variants = model.Variants.Select(v => new ProductVariant
+
+            var flavoursIds = model.Variants.Select(v => v.FlavourId).Distinct().ToList();
+
+            var flavours = _context.Flavors.Where(f => flavoursIds.Contains(f.Id)).ToDictionary(f => f.Id);
+
+            var missingFlavours = flavoursIds.Except(flavours.Keys).ToList();
+
+            if (missingFlavours.Any())
+                throw new InvalidOperationException(
+                    $"Flavours not found: {string.Join(", ", missingFlavours)}");
+
+            var variants = model.Variants.Select(v =>
             {
-                ProductId = product.Id,
-                FlavourId = v.FlavourId,
-                WeightG = v.WeightG,
-                ServingSizeG = v.ServingSizeG,
-                ServingsPerContainer = v.ServingSizeG > 0 ? (int)Math.Round((decimal)v.WeightG / v.ServingSizeG) : 0,
-                Price = v.Price,
-                Stock = v.Stock,
-                IsDeleted = false
+                var flavour = flavours[v.FlavourId];
+
+                var servingsPerContainer = v.ServingSizeG > 0
+                    ? (int)Math.Round((decimal)v.WeightG / v.ServingSizeG)
+                    : 0;
+
+                return new ProductVariant
+                {
+                    ProductId = product.Id,
+                    FlavourId = v.FlavourId,
+                    WeightG = v.WeightG,
+                    ServingSizeG = v.ServingSizeG,
+                    ServingsPerContainer = servingsPerContainer,
+                    Price = v.Price,
+                    Stock = v.Stock,
+                    SKU = _skuGenerator.Generate(product.Brand!.Code, model.Code, flavour.Code, v.WeightG),
+                    IsDeleted = false
+                };
             }).ToList();
+
             _context.ProductVariants.AddRange(variants);
 
             var finalImages = await BuildUpdatedGalleryAsync(product, model);
@@ -342,24 +390,40 @@ namespace IronFuel.Web.Services
             return true;
         }
 
-        public async Task<(IReadOnlyList<object> Sizes, decimal Price)> GetVariantSelectionDataAsync(int productId, int flavourId, decimal? weightG)
+        public async Task<IReadOnlyList<object>> GetSizesSelectionDataAsync(int productId, int flavourId)
         {
             var sizes = await _context.ProductVariants
                 .AsNoTracking()
                 .Where(v => v.ProductId == productId && v.FlavourId == flavourId && !v.IsDeleted)
-                .Select(v => new { v.WeightG, v.ServingSizeG })
+                .Select(v => new { v.WeightG, v.ServingSizeG, v.ServingsPerContainer,v.Stock, v.Price, v.SKU })
                 .Distinct()
                 .OrderBy(v => v.WeightG)
                 .ToListAsync();
 
-            var selectedWeight = weightG ?? sizes.FirstOrDefault()?.WeightG ?? 0;
+           
+            return sizes.Cast<object>().ToList();
+        }
+
+        public async Task<string> GetSKU(int productId, int flavourId, int weightG)
+        {
+            var sku = await _context.ProductVariants
+                .AsNoTracking()
+                .Where(v => v.ProductId == productId && v.FlavourId == flavourId && v.WeightG == weightG && !v.IsDeleted)
+                .Select(v => v.SKU)
+                .FirstOrDefaultAsync();
+
+            return sku ?? string.Empty;
+        }
+
+        public async Task<decimal> GetPrice(string SKU)
+        {
             var price = await _context.ProductVariants
                 .AsNoTracking()
-                .Where(v => v.ProductId == productId && v.FlavourId == flavourId && v.WeightG == selectedWeight && !v.IsDeleted)
+                .Where(v => v.SKU == SKU && !v.IsDeleted)
                 .Select(v => v.Price)
                 .FirstOrDefaultAsync();
 
-            return (sizes.Cast<object>().ToList(), price);
+            return price;
         }
 
         private async Task<(bool Success, string? ErrorKey, string? ErrorMessage)> ApplyProductVideoForUpdateAsync(

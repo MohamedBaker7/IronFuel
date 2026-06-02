@@ -44,15 +44,22 @@ namespace IronFuel.Web.Controllers
         [HttpGet, AjaxOnly]
         public async Task<IActionResult> GetSizesByFlavour(int productId, int flavourId)
         {
-            var data = await _productService.GetVariantSelectionDataAsync(productId, flavourId, null);
-            return Json(data.Sizes);
+            var data = await _productService.GetSizesSelectionDataAsync(productId, flavourId);
+            return Json(data);
         }
 
         [HttpGet, AjaxOnly]
-        public async Task<IActionResult> GetProductPrice(int productId, int flavourId, decimal weightG)
+        public async Task<IActionResult> GetProductSKU(int productId, int flavourId, int weightG)
         {
-            var data = await _productService.GetVariantSelectionDataAsync(productId, flavourId, weightG);
-            return Json(data.Price);
+            var sku = await _productService.GetSKU(productId, flavourId, weightG);
+            return Json(sku);
+        }
+
+        [HttpGet, AjaxOnly]
+        public async Task<IActionResult> GetProductPrice(string SKU)
+        {
+            var price = await _productService.GetPrice(SKU);
+            return Json(price);
         }
     }
 }

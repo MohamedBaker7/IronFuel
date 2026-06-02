@@ -1,4 +1,5 @@
 using IronFuel.Application.Common.Interfaces;
+using Microsoft.DotNet.Scaffolding.Shared.Project;
 
 namespace IronFuel.Web.Services
 {
@@ -41,7 +42,16 @@ namespace IronFuel.Web.Services
         public BrandFormViewModel? BuildEditModel(int id)
         {
             var brand = _context.Brands.Find(id);
-            return brand is null ? null : _mapper.Map<BrandFormViewModel>(brand);
+            
+            if(brand is null)
+                return null;
+
+            var viewModel = _mapper.Map<BrandFormViewModel>(brand);
+
+            viewModel.IsCodeLocked = _context.ProductVariants
+            .Any(v => v.SKU.Contains(brand.Code + "-"));
+
+            return viewModel;
         }
 
         public BrandViewModel Create(BrandFormViewModel model)
@@ -49,6 +59,8 @@ namespace IronFuel.Web.Services
             var brand = _mapper.Map<Brand>(model);
             _context.Brands.Add(brand);
             _context.SaveChanges();
+
+            InvalidateCache();
             return _mapper.Map<BrandViewModel>(brand);
         }
 
@@ -62,6 +74,7 @@ namespace IronFuel.Web.Services
             brand.LastUpdatedOn = DateTime.UtcNow;
             _context.SaveChanges();
 
+            InvalidateCache();
             return _mapper.Map<BrandViewModel>(brand);
         }
 
@@ -74,13 +87,35 @@ namespace IronFuel.Web.Services
             brand.IsDeleted = !brand.IsDeleted;
             brand.LastUpdatedOn = DateTime.UtcNow;
             _context.SaveChanges();
+
+            InvalidateCache();
             return (true, brand.LastUpdatedOn?.ToString("MMM dd, yyyy"));
         }
 
-        public bool AllowedItem(BrandFormViewModel model)
+        public bool AllowedName(BrandFormViewModel model)
         {
             var brand = _context.Brands.SingleOrDefault(b => b.Name == model.Name);
             return brand is null || brand.Id.Equals(model.Id);
         }
+
+        public bool AllowedCode(BrandFormViewModel model)
+        {
+            var brand = _context.Brands.SingleOrDefault(b => b.Code == model.Code);
+
+            return brand is null || brand.Id.Equals(model.Id);
+        }
+
+        public bool IsCodeUsedInSKU(BrandFormViewModel model)
+        {
+            var brand = _context.Brands.Find(model.Id);
+
+            if (brand is null || brand.Code == model.Code.ToUpper())
+                return false; 
+
+            return _context.ProductVariants
+                .Any(v => v.SKU.StartsWith(brand.Code + "-"));
+        }
+
+        private async void InvalidateCache() => await _cacheService.RemoveAsync("brands_list");
     }
 }

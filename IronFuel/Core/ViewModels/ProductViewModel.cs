@@ -7,6 +7,7 @@ namespace IronFuel.Web.Core.ViewModels
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
+        public string Code { get; set; } = null!;
         public int CategoryId { get; set; }
         public CategoryViewModel? Category { get; set; }
         public int BrandId { get; set; }
@@ -24,14 +25,11 @@ namespace IronFuel.Web.Core.ViewModels
         public IEnumerable<ProductVariantViewModel> Variants { get; set; } = new List<ProductVariantViewModel>();
         public IEnumerable<SelectListItem> Flavors { get; set; } = new List<SelectListItem>();
 
-
         [Display(Name = "Sizes")]
         public string SelectedSizes { get; set; } = string.Empty;
 
         public IEnumerable<SelectListItem> Sizes { get; set; } = new List<SelectListItem>();
         public IReadOnlyList<ProductImageViewModel> Images { get; set; } = Array.Empty<ProductImageViewModel>();
-
-
         public string? PrimaryImage
         {
             get

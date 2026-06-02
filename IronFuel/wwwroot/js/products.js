@@ -328,7 +328,6 @@ function clearAllFilters(form) {
     applyFilters(form);
 }
 
-
 function createChip(label, type, value = null) {
 
     return `

@@ -53,6 +53,7 @@ namespace IronFuel.Web.Services
             _context.Categories.Add(category);
             _context.SaveChanges();
 
+            InvalidateCache();
             return _mapper.Map<CategoryViewModel>(category);
 
         }
@@ -64,11 +65,12 @@ namespace IronFuel.Web.Services
             if (category is null)
                 return null;
 
-            category = _mapper.Map(model, category); // Add Mapper In Edit Mode
+            category = _mapper.Map(model, category);
             //category.LastUpdatedById = User.GetUserId();
             category.LastUpdatedOn = DateTime.Now;
             _context.SaveChanges();
 
+            InvalidateCache(); // Invalidate cache after update
             return _mapper.Map<CategoryViewModel>(category);
 
         }
@@ -82,6 +84,8 @@ namespace IronFuel.Web.Services
             category.IsDeleted = !category.IsDeleted;
             category.LastUpdatedOn = DateTime.UtcNow;
             _context.SaveChanges();
+
+            InvalidateCache();
             return (true, category.LastUpdatedOn?.ToString("MMM dd, yyyy"));
         }
         public bool AllowedItem(CategoryFormViewModel model)

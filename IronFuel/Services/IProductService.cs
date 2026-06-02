@@ -15,8 +15,11 @@ namespace IronFuel.Web.Services
         Task<(bool Success, string? ErrorKey, string? ErrorMessage)> CreateAsync(ProductEditorViewModel model);
         Task<(bool Success, string? ErrorKey, string? ErrorMessage)> UpdateAsync(int id, ProductEditorViewModel model);
         Task<bool> ToggleStatusAsync(int id);
-        Task<(IReadOnlyList<object> Sizes, decimal Price)> GetVariantSelectionDataAsync(int productId, int flavourId, decimal? weightG);
-    
+        Task<IReadOnlyList<object>> GetSizesSelectionDataAsync(int productId, int flavourId);
+        Task<string> GetSKU(int productId, int flavourId,int weightG);
+        Task<decimal> GetPrice(string SKU);
+
+
         bool AllowedItem(ProductEditorViewModel model);
     }
 

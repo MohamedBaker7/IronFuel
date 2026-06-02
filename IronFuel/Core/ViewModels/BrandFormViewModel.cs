@@ -8,8 +8,15 @@ namespace IronFuel.Web.Core.ViewModels
 
         [MaxLength(200, ErrorMessage = Errors.MaxLength)]
         [Display(Name = "Brand")]
-        [Remote("AllowedItem", "Brands", AdditionalFields = "Id", ErrorMessage = Errors.Duplicated),
+        [Remote("AllowedName", "Brands", AdditionalFields = nameof(Id), ErrorMessage = Errors.Duplicated),
             RegularExpression(RegexPattern.CharactersOnly_Eng, ErrorMessage = Errors.OnlyEnglishLetters)]
         public string Name { get; set; } = null!;
+
+        [Required, Display(Name = "Code"), MaxLength(6, ErrorMessage = Errors.MaxLength)]
+        [RegularExpression(RegexPattern.CharactersOnly_Eng, ErrorMessage = Errors.OnlyEnglishLetters)]
+        [Remote("AllowedCode", "Brands", AdditionalFields = nameof(Id))]
+        public string Code { get; set; } = null!;
+
+        public bool IsCodeLocked { get; set; }
     }
 }

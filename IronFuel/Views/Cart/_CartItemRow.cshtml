@@ -1,0 +1,46 @@
+﻿@model CartItemViewModel
+
+
+@{
+
+    var sizeLabel = Model.WeightG >= 1000
+        ? $"{Model.WeightG / 1000} kg"
+        : $"{Model.WeightG} g";
+
+}
+
+<tr>
+    <td class="col-7">
+        <div class="row d-flex align-items-center mb-3">
+            <div class="col-2 min-w-100">
+                <img src="@Url.Content("~/" + Model.ProductImage.TrimStart('/'))" class="img-fluid" alt="@Model.ProductName">
+            </div>
+         
+            <div class="col d-flex flex-column justify-content-center mw-0">
+                <a href="@Url.Action("Details", "Products", new { id = Model.ProductId })"
+                       class="fw-bold text-decoration-none fs-6 text-dark mb-1 d-block">
+                    <span class="swap-dark">@Model.ProductName</span>
+                </a>
+                <span class="text-muted">
+                    @($"{Model.UnitPrice.ToString("F0")} EGP")
+                </span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="text-dark text-sm">
+                        @($"{Model.FlavourName} / {sizeLabel} ({Model.Servings} Servings)")
+                    </span>
+                </div>
+            </div>
+        </div>
+    </td>
+    <td>
+        <input id="QuantityInput"
+               type="number"
+               class="form-control rounded-0 border-muted text-center quantity-input"
+               min="1"              
+               asp-for="Quantity"
+               data-item-sku="@Model.SKU"
+               aria-label="Quantity" />
+        <a id="RemoveCartItem" class="fs-6 text-decoration-none swap-reverse js-remove-item" data-item-sku="@Model.SKU">Remove</a>
+    </td>
+    <td class="text-end min-w-100">@($"{Model.TotalPrice.ToString("F0")} EGP")</td>
+</tr>

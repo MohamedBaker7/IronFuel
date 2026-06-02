@@ -26,7 +26,7 @@ function applySelect2() {
 function adjustCanvas() {
     var canvas = $("#mobileFilter");
 
-    if (isMobile() || isTablet()) {
+    if (isMobile()) {
         canvas.removeClass("offcanvas-end")
             .addClass("offcanvas-bottom");
     } else if (isTablet()) {
@@ -81,6 +81,57 @@ function onModalSuccess(row) {
 
 function onModelComplete() {
     ShowSubmitButton($('#Modal').find(':submit'));
+}
+
+function updateCartUI(cartCount, cartTotal) {
+    $('#cart-count').text(cartCount);
+    $('#cart-total').text(cartTotal);
+    showToast('Item added to cart!', 'success');
+}
+
+function showCartSummaryOffcanvas() {
+    // Update total in offcanvas footer
+    //$('#cartOffcanvasTotal').text('$' + parseFloat(response.cart_total).toFixed(2));
+
+    if (window.location.pathname.toLowerCase().includes('/cart')) {
+        location.reload();
+        return;
+    }
+
+    $('#cartOffcanvasBody').load('/Cart/CartSummary', function () {
+
+
+        const offcanvas = new bootstrap.Offcanvas($('#cartOffcanvas')[0], {
+            scroll: true,
+            backdrop: true
+        });
+
+        offcanvas.show();
+    });
+}
+
+function showCartSuccessAddedOffcanvas(response) {
+    const item = response.item;
+
+    var sizeLabel = item.size >= 1000 ?
+        item.size / 1000 + ' kg'
+        : item.size + ' g';
+
+    $('#cartOffcanvasImage')
+        .attr('src', '/' + item.image?.trimStart('/'))
+        .attr('alt', item.name);
+
+    $('#cartOffcanvasName').text(item.name);
+    $('#cartOffcanvasPrice').text(parseFloat(item.totalPrice).toFixed(2) + ' EGP');
+
+    $('#cartOffcanvasSize_Flavour').html(`<span class="text-muted fw-semibold">${item.flavour} / ${sizeLabel} (${item.servings} Servings)</span>`);
+
+    const offcanvas = new bootstrap.Offcanvas($('#successAddedOffcanvas')[0], {
+        scroll: false,
+        backdrop: true  
+    });
+
+    offcanvas.show();
 }
 
 // Handle Save Button Submit On Modal
@@ -186,8 +237,6 @@ $(document).ready(function () {
 })
 
 
-
-
 $(document).on('submit', 'form', function () {
     var form = $(this);
     var submitBtn = form.find(':submit');
@@ -197,5 +246,66 @@ $(document).on('submit', 'form', function () {
     // Re-show button if server returns validation errors (page stays same)
     $(window).on("load", function () {
         ShowSubmitButton(submitBtn);
+    });
+});
+
+
+$(document).on('click', '#ShowCartSummary', function () {
+    showCartSummaryOffcanvas();
+})
+
+// ── Add To Cart
+$(document).on('click', '#AddToCartBtn', function () {
+    const $btn = $(this);
+    const sku = $('#SKU').val(); // data-sku for cards, #SKU for details
+    const qty = parseInt($('#QuantityInput').val()) || 1;
+
+    if (!sku) {
+        return;
+    }
+
+    $btn.prop('disabled', true).text('Adding...');
+
+
+
+    $.ajax({
+        url: '/Cart/AddToCart',
+        method: 'POST',
+        data: {
+            sku: sku,
+            qty: qty,
+            __RequestVerificationToken: $('[name=__RequestVerificationToken]').val()
+        },
+        success: function (response) {
+            if (response.success) {
+                updateCartUI(response.cart_count, response.cart_total);
+                $('#QuantityInput').val(1);
+
+                setTimeout(function () {
+                    showCartSuccessAddedOffcanvas(response);
+                }, 2000);
+
+            }
+        },
+        error: function (xhr) {
+            const message = xhr.responseJSON?.message || 'Something went wrong';
+            showToast(message, 'error');
+        },
+        complete: function (response) {
+            setTimeout(() => {
+                $btn.prop('disabled', false).text('Add to Cart');
+            }, 2000)
+        }
+    });
+});
+
+// Add class to body when offcanvas is open to prevent background scroll
+document.querySelectorAll('.offcanvas').forEach(function (el) {
+    el.addEventListener('show.bs.offcanvas', function () {
+        document.body.classList.add('offcanvas-open');
+    });
+
+    el.addEventListener('hidden.bs.offcanvas', function () {
+        document.body.classList.remove('offcanvas-open');
     });
 });
