@@ -150,6 +150,13 @@ namespace IronFuel.Web.Controllers
             return PartialView("_CartSummaryBody", cart);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetTotal()
+        {
+            var cart = await _cartService.GetCartAsync(GetCartToken());
+            return Json(new { totalAmount = cart?.TotalAmount ?? 0 });
+        }
+
         private Guid GetCartToken()
         {
             // Try to get existing token from cookie

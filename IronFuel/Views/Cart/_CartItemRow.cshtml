@@ -10,7 +10,7 @@
 }
 
 <tr>
-    <td class="col-7">
+    <td class="col-7 ps-0">
         <div class="row d-flex align-items-center mb-3">
             <div class="col-2 min-w-100">
                 <img src="@Url.Content("~/" + Model.ProductImage.TrimStart('/'))" class="img-fluid" alt="@Model.ProductName">
@@ -19,7 +19,7 @@
             <div class="col d-flex flex-column justify-content-center mw-0">
                 <a href="@Url.Action("Details", "Products", new { id = Model.ProductId })"
                        class="fw-bold text-decoration-none fs-6 text-dark mb-1 d-block">
-                    <span class="swap-dark">@Model.ProductName</span>
+                    @Model.ProductName
                 </a>
                 <span class="text-muted">
                     @($"{Model.UnitPrice.ToString("F0")} EGP")
@@ -33,14 +33,17 @@
         </div>
     </td>
     <td>
-        <input id="QuantityInput"
+        <input id="CartItemQuantity"
                type="number"
-               class="form-control rounded-0 border-muted text-center quantity-input"
+               class="form-control rounded-0 border-muted text-center quantity-input js-cart-quantity"
                min="1"              
                asp-for="Quantity"
                data-item-sku="@Model.SKU"
+               data-item-stock="@Model.Stock"
                aria-label="Quantity" />
-        <a id="RemoveCartItem" class="fs-6 text-decoration-none swap-reverse js-remove-item" data-item-sku="@Model.SKU">Remove</a>
+        <a class="fs-6 text-decoration-none swap-reverse js-remove-item" data-item-sku="@Model.SKU">Remove</a>
     </td>
     <td class="text-end min-w-100">@($"{Model.TotalPrice.ToString("F0")} EGP")</td>
 </tr>
+
+@Html.AntiForgeryToken()

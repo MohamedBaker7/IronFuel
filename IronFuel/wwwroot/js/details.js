@@ -292,6 +292,32 @@ function showToast(message, type = 'success') {
     setTimeout(() => $toast.removeClass('show'), 2500);
 }
 
+function navigateImage(direction, targetIndex = null) {
+
+    const $thumbs = $('.thumb-img');
+    const $dots = $('.dot-btn');
+    const $active = $thumbs.filter('.active-thumb');
+    const index = $thumbs.index($active);
+    const total = $thumbs.length;
+
+    const nextIndex = targetIndex !== null
+        ? targetIndex
+        : direction === 'next'
+            ? (index + 1) % total
+            : (index - 1 + total) % total;
+
+    const nextSrc = $thumbs.eq(nextIndex).attr('src');
+
+    $('#mainProductImage').attr('src', nextSrc);
+
+    $thumbs.removeClass('active-thumb');
+    $thumbs.eq(nextIndex).addClass('active-thumb');
+
+    $dots.removeClass('active-dot').attr('tabindex', '-1');
+    $dots.eq(nextIndex).addClass('active-dot').attr('tabindex', '0');
+
+}
+
 document.addEventListener('DOMContentLoaded', function () {
 
     const productId = parseFloat($('#ProductId').val());
@@ -301,14 +327,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     restoreOrDefaultSelections();
 
-    // ── Flavour change ────────────────────────────────────────
     $('#Flavors').on('change', function () {
         const flavourId = parseFloat($(this).val());
         sessionStorage.removeItem('productDetails');
         getSizesByFlavour(productId, flavourId);
     });
 
-    // ── Size change ───────────────────────────────────────────
     $('#Sizes').on('change', function () {
         const weightG = parseFloat($(this).val());
         const flavourId = parseFloat($('#Flavors').val());
@@ -350,43 +374,6 @@ document.addEventListener('DOMContentLoaded', function () {
         this.value = val;
     });
 
-    // ── Dot navigation (mobile gallery) ──────────────────────
-    const dots = document.querySelectorAll('.dot-btn');
-    const mainImage = document.getElementById('mainProductImage');
-
-    dots.forEach((dot, index) => {
-        dot.addEventListener('click', function () {
-            const newSrc = this.getAttribute('data-src');
-            if (newSrc && mainImage) {
-                mainImage.src = newSrc;
-                mainImage.alt = `Product image ${index + 1}`;
-                dots.forEach((d, i) => {
-                    d.setAttribute('aria-selected', i === index ? 'true' : 'false');
-                    d.setAttribute('tabindex', i === index ? '0' : '-1');
-                });
-            }
-        });
-
-        dot.addEventListener('keydown', function (e) {
-            if (e.key === 'ArrowRight' && index < dots.length - 1) { dots[index + 1].focus(); dots[index + 1].click(); }
-            else if (e.key === 'ArrowLeft' && index > 0) { dots[index - 1].focus(); dots[index - 1].click(); }
-        });
-    });
-
-    // ── Thumbnail gallery (desktop) ───────────────────────────
-    const thumbnails = document.querySelectorAll('.thumb-img');
-
-    thumbnails.forEach(thumb => {
-        thumb.addEventListener('click', function () {
-            if (mainImage) { mainImage.src = this.src; mainImage.alt = this.alt; }
-            thumbnails.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-        });
-
-        thumb.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); this.click(); }
-        });
-    });
 
     // ── Collapse toggle animations ────────────────────────────
     document.querySelectorAll('.collapse-toggle').forEach(toggle => {
@@ -411,3 +398,76 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
+
+const isTouchOnly = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+if (!isTouchOnly) {
+    $('#mainProductImage').on('mousemove', function (e) {
+        const imageWidth = $(this).outerWidth();
+        const offsetX = e.offsetX;
+        const isLeftHalf = offsetX < imageWidth / 2;
+
+        $(this)
+            .toggleClass('cursor-left', isLeftHalf)
+            .toggleClass('cursor-right', !isLeftHalf);
+    });
+
+    $('#mainProductImage').on('mouseleave', function () {
+        $(this).removeClass('cursor-left cursor-right');
+    });
+
+    $('#mainProductImage').on('click', function (e) {
+        const imageWidth = $(this).outerWidth();
+        const offsetX = e.offsetX;
+        const isLeftHalf = offsetX < imageWidth / 2;
+
+        if (isLeftHalf) {
+            navigateImage('prev');
+        } else {
+            navigateImage('next');
+        }
+    });
+}
+
+
+// thumb-img 
+$(document).on('click', '.thumb-img', function () {
+
+    $('.thumb-img').removeClass('active-thumb');
+    $(this).addClass('active-thumb');
+    $('#mainProductImage').attr('src', $(this).attr('src'));
+
+    // refresh dot navigation state
+    const index = $('.thumb-img').index($(this));
+    const $dots = $('.dot-btn');
+    $dots.removeClass('active-dot').attr('tabindex', '-1');
+    $dots.eq(index).addClass('active-dot').attr('tabindex', '0');
+});
+
+$('.thumb-img').first().addClass('active-thumb');
+
+// dot navigation
+$(document).on('click', '.dot-btn', function () {
+    const $dot = $(this);
+    const newSrc = $dot.data('src');
+    const index = $('.dot-btn').index($dot);
+    const currIndex = $('.dot-btn').index($('.dot-btn.active-dot'));
+
+    if (newSrc && index !== currIndex) {
+        navigateImage(index > currIndex ? 'next' : 'prev', index);
+    }
+
+});
+
+$(document).on('keydown', '.dot-btn', function (e) {
+    const $dots = $('.dot-btn');
+    const index = $dots.index($(this));
+
+    if (e.key === 'ArrowRight' && index < $dots.length - 1) {
+        $dots.eq(index + 1).trigger('focus').trigger('click');
+    } else if (e.key === 'ArrowLeft' && index > 0) {
+        $dots.eq(index - 1).trigger('focus').trigger('click');
+    }
+});
+
+$('.dot-btn').first().addClass('active-dot').attr('tabindex', '0');

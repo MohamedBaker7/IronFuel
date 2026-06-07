@@ -1,8 +1,22 @@
 ﻿
 
-$('#QuantityInput').on('change', function () {
-    const quantity = $(this).val();
+
+
+$(document).on('change', '.js-cart-quantity', function () {
+
+    const $input = $(this);
+    var quantity = $(this).val();
     const itemSKU = $(this).data('item-sku');
+    const stock = $(this).data('item-stock');
+    quantity = quantity < 1 ? 1 : quantity;
+
+   
+    if (quantity > stock) {
+        qauntity = stock;
+        showErrorMessage('Only ' + stock + ' items in stock');
+    }
+
+    $input.val(quantity);
 
     $.ajax({
         url: '/Cart/UpdateCart',
@@ -14,7 +28,6 @@ $('#QuantityInput').on('change', function () {
         },
         success: function (response) {
             if (response.success) {
-                location.reload();
                 $('#subtotal').text(response.sub_total);
                 $('#cart-total').text(response.cart_total);
             }
@@ -25,9 +38,13 @@ $('#QuantityInput').on('change', function () {
     });
 });
 
-$('.js-remove-item').on('click', function () {
+
+
+
+$(document).on('click', '.js-remove-item', function () {
     const itemSKU = $(this).data('item-sku');
     const $row = $(this).closest('tr, .cart-item');
+
 
     $.ajax({
         url: '/Cart/RemoveFromCart',
@@ -38,17 +55,21 @@ $('.js-remove-item').on('click', function () {
         },
         success: function (response) {
             if (response.success) {
-                
+
                 $row.remove();
 
                 if (response.cart_count == 0)
                     location.reload();
                 //$('#cart-count').text(response.cart_count);
-                //$('#cart-total').text(response.cart_total);
+
+                var newPrice = formatPrice(response.cart_total) + ' EGP';
+                $('#TotalPrice, #offcanvasTotalPrice').text(newPrice);
             }
         },
         error: function (xhr) {
             console.error('Remove failed:', xhr.responseText);
         }
     });
+
+    
 });

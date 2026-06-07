@@ -23,7 +23,8 @@ else
                         <tbody>
                             @foreach (var item in Model.Items)
                             {
-                                <partial name="_CartItemRow" model="item" />
+                                @* <partial name="_CartSummaryItemRow" model="item" /> *@
+                                <partial name="_CartItemRow" model="item"/>
                             }
                         </tbody>
                 
@@ -33,3 +34,4 @@ else
         </div>
     </div>
 }
+

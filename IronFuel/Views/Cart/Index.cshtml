@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Your Shopping Cart";
+
+    
 }
 
 
@@ -51,13 +53,36 @@ else
             </div>
         </div>
 
-        <div class="col sticky-lg">
-            <p>Checkout will be here</p>
+        <div class="col">
+            <div class="card rounded-0 sticky-lg">
+                <div class="card-body">
+                    <div class="row d-flex p-3">
+                        <span class="col fw-bold fs-3 ps-0">Total</span>
+                        <span class="col fw-bold fs-5 text-end text-uppercase" id="TotalPrice">@Model.TotalAmount.ToString("N0") EGP</span>
+                        <p class="row text-muted">
+                            Tax included and shipping calculated at checkout
+                        </p>
+                    </div>
+                    <div class="row px-3">
+                        <a asp-controller="CheckOut" asp-action="Index"
+                               class="col btn btn-dark rounded-0 py-3 fw-bold text-uppercase m-2">
+                            <span class="me-2">
+                                <svg role="presentation" fill="none" focusable="false" stroke-width="2" width="18" height="18" class="icon icon-picto-lock" viewBox="0 0 24 24">
+                                    <path d="M3.236 18.182a5.071 5.071 0 0 0 4.831 4.465 114.098 114.098 0 0 0 7.865-.001 5.07 5.07 0 0 0 4.831-4.464 23.03 23.03 0 0 0 .165-2.611c0-.881-.067-1.752-.165-2.61a5.07 5.07 0 0 0-4.83-4.465c-1.311-.046-2.622-.07-3.933-.069a109.9 109.9 0 0 0-3.933.069 5.07 5.07 0 0 0-4.83 4.466 23.158 23.158 0 0 0-.165 2.609c0 .883.067 1.754.164 2.61Z" fill="currentColor" fill-opacity=".12" stroke="currentColor"></path>
+                                    <path d="M17 8.43V6.285A5 5 0 0 0 7 6.286V8.43" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    <path d="M12 17.714a2.143 2.143 0 1 0 0-4.286 2.143 2.143 0 0 0 0 4.286Z" stroke="currentColor"></path>
+                                </svg>
+                            </span>
+                            Check Out
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 }
 
-@Html.AntiForgeryToken()
+
 
 @section Scripts {
     <script src="~/js/cart.js" asp-append-version="true"></script>

@@ -168,12 +168,9 @@ namespace IronFuel.Web.Services
             if (variant.Stock < qty)
                 throw new BadRequestException($"Only {variant.Stock} units available for SKU '{sku}'.");
 
-            const int MaxQtyPerItem = 10;
+            
             var existing = cart.Items.FirstOrDefault(i => i.SKU == sku.ToUpper());
-            var totalQty = qty + (existing?.Quantity ?? 0);
 
-            if (totalQty > MaxQtyPerItem)
-                throw new BadRequestException($"Maximum {MaxQtyPerItem} units per item.");
 
             if (existing is not null)
             {
@@ -228,6 +225,7 @@ namespace IronFuel.Web.Services
             if (cartItem == null) return false;
 
             var variant = _context.ProductVariants
+                .Where(pv => !pv.IsDeleted)
                 .FirstOrDefault(v => v.SKU == sku.ToUpper());
 
             if (variant is not null)
@@ -252,11 +250,13 @@ namespace IronFuel.Web.Services
         {
             var cartItem = _context.CartItems
                 .Include(c => c.Cart)
+                .Where(c => !c.IsDeleted)
                 .FirstOrDefault(c => c.SKU == sku);
 
             if (cartItem == null) return false;
 
             var variant = _context.ProductVariants
+                .Where(pv => !pv.IsDeleted)
                 .FirstOrDefault(v => v.SKU == sku.ToUpper());
 
             if (variant is not null)

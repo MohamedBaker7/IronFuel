@@ -40,7 +40,8 @@ namespace IronFuel.Web.Core.Mapping
                 .ForMember(d => d.ProductImage, opt => opt.MapFrom(s => s.ProductVariant.Product.Images.OrderBy(i => i.SortOrder).FirstOrDefault()!.RelativePath ?? string.Empty))
                 .ForMember(d => d.Servings, opt => opt.MapFrom(s => s.ProductVariant.ServingsPerContainer))
                 .ForMember(d => d.FlavourName, opt => opt.MapFrom(s => s.ProductVariant.Flavour.Name))
-                .ForMember(d => d.WeightG, opt => opt.MapFrom(s => s.ProductVariant.WeightG));
+                .ForMember(d => d.WeightG, opt => opt.MapFrom(s => s.ProductVariant.WeightG))
+                .ForMember(d => d.Stock, opt => opt.MapFrom(s => s.ProductVariant.Stock));
 
 
             CreateMap<Order, OrderViewModel>();

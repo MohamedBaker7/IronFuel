@@ -138,14 +138,6 @@
         height: 32px;
     }
 
-    .quantity-input {
-        width: 50px !important;
-    }
-
-    .add-to-cart-btn {
-        padding: 0.75rem 1.5rem !important;
-        font-size: 0.95rem;
-    }
 
     .ms-4 {
         margin-left: 1rem !important;
@@ -208,6 +200,18 @@ img[loading="lazy"] {
     }
 }
 
+.main-image-wrapper img {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Ccircle cx='28' cy='28' r='26' fill='white' stroke='%23ccc' stroke-width='0'/%3E%3Cpolyline points='24 20 32 28 24 36' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 28 28, pointer;
+}
+
+.main-image-wrapper img.cursor-left {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Ccircle cx='28' cy='28' r='26' fill='white' stroke='%23ccc' stroke-width='0'/%3E%3Cpolyline points='32 20 24 28 32 36' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 28 28, pointer;
+}
+
+.main-image-wrapper img.cursor-right {
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Ccircle cx='28' cy='28' r='26' fill='white' stroke='%23ccc' stroke-width='0'/%3E%3Cpolyline points='24 20 32 28 24 36' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 28 28, pointer;
+}
+
 .gallery-wrapper {
     position: relative;
     display: flex;
@@ -248,7 +252,7 @@ img[loading="lazy"] {
     transition: var(--transition-fast);
 }
 
-    .thumb-img.active {
+    .thumb-img.active-thumb {
         border-bottom-color: black;
     }
 
@@ -259,6 +263,8 @@ img[loading="lazy"] {
     align-items: center;
     justify-content: center;
     background: #ffffff;
+    position: relative;
+    overflow: hidden;
 }
 
     .main-image-wrapper img {
@@ -280,50 +286,64 @@ img[loading="lazy"] {
         opacity: 0.7;
     }
 
+
 .dots-container {
-    padding: 1rem 0;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: fit-content;
+    max-width: 90%;
     display: flex;
-    gap: 0.5rem;
+    flex-wrap: wrap;
     justify-content: center;
-    cursor: pointer;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    /* glass effect */
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 999px;
 }
 
 .dot-btn {
-    padding: 0 !important;
-    font-size: 1.5rem;
-    color: #ccc;
-    transition: all 0.2s ease;
-    transform: scale(1);
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #000;
+    opacity: 0.3;
+    transition: opacity 0.2s ease-in-out, width 0.2s ease-in-out;
+    padding: 0;
+    border: none;
+    flex-shrink: 0;
     cursor: pointer;
 }
+
+    /* ── Active dot ─────────────────────────────────────────────────────── */
+    .dot-btn.active-dot {
+        opacity: 1;
+        width: 20px;
+    }
 
     .dot-btn:hover {
-        transform: scale(1.2);
+        opacity: 0.7;
+        background: #000;
     }
 
-    .dot-btn[aria-selected="true"] {
-        color: #000;
+    /* ── Keep active dot fully visible on hover ────────────────────────── */
+    .dot-btn.active-dot:hover {
+        opacity: 1;
     }
 
-    .dot-btn[aria-selected="false"] {
-        color: #ccc;
-        opacity: 0.5;
-        transition: color 0.3s ease, opacity 0.3s ease;
+    .dot-btn.active-dot,
+    .dot-btn.active-dot:hover {
+        background: #000;
+        opacity: 1;
     }
 
-        .dot-btn[aria-selected="false"]:hover {
-            color: #999;
-            opacity: 0.8;
-        }
 
-.bi-dot {
-    color: #ccc;
-    cursor: pointer;
-}
 
-    .bi-dot.active {
-        color: black;
-    }
 
 .product-info h1 {
     font-size: 2rem;
@@ -403,7 +423,6 @@ img[loading="lazy"] {
 
     .quantity-input:focus {
         box-shadow: none !important;
-        border-color: transparent !important;
     }
 
     .quantity-input::-webkit-outer-spin-button,
@@ -446,6 +465,7 @@ img[loading="lazy"] {
     overflow: hidden;
     letter-spacing: 0.5px;
     width: 100%;
+    min-height: 50px;
     padding: 0.875rem 2rem !important;
     font-size: 1rem;
     font-weight: 600;
@@ -647,4 +667,3 @@ img[loading="lazy"] {
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
-

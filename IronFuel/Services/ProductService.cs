@@ -232,6 +232,7 @@ namespace IronFuel.Web.Services
             var product = new Product
             {
                 Name = model.Name.Trim(),
+                Code = model.Code.Trim(),
                 CategoryId = model.CategoryId,
                 BrandId = model.BrandId,
                 Description = model.Description.Trim(),
@@ -243,8 +244,9 @@ namespace IronFuel.Web.Services
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-
             var flavoursIds = model.Variants.Select(v => v.FlavourId).Distinct().ToList();
+
+            var brand = _context.Brands.FirstOrDefaultAsync(b => b.Id == product.BrandId);
 
             var flavours = _context.Flavors.Where(f => flavoursIds.Contains(f.Id)).ToDictionary(f => f.Id);
 
@@ -329,7 +331,6 @@ namespace IronFuel.Web.Services
             if (!videoResult.Success)
                 return (false, videoResult.ErrorKey, videoResult.ErrorMessage);
 
-            _context.ProductVariants.RemoveRange(product.Variants);
 
             var flavoursIds = model.Variants.Select(v => v.FlavourId).Distinct().ToList();
 
@@ -341,29 +342,56 @@ namespace IronFuel.Web.Services
                 throw new InvalidOperationException(
                     $"Flavours not found: {string.Join(", ", missingFlavours)}");
 
-            var variants = model.Variants.Select(v =>
+            var existingByKey = product.Variants
+                .Where(v => !v.IsDeleted)
+                .ToDictionary(v => (v.FlavourId, v.WeightG));
+
+            var incomingKeys = model.Variants
+                .Select(v => (v.FlavourId, v.WeightG))
+                .ToHashSet();
+
+            // Soft-delete variants that were removed from the form.
+            foreach (var existing in product.Variants)
+            {
+                if (!incomingKeys.Contains((existing.FlavourId, existing.WeightG)))
+                    existing.IsDeleted = true;
+            }
+
+            foreach (var v in model.Variants)
             {
                 var flavour = flavours[v.FlavourId];
-
+                var sku = _skuGenerator.Generate(product.Brand!.Code, model.Code, flavour.Code, v.WeightG);
                 var servingsPerContainer = v.ServingSizeG > 0
                     ? (int)Math.Round((decimal)v.WeightG / v.ServingSizeG)
                     : 0;
 
-                return new ProductVariant
+                if (existingByKey.TryGetValue((v.FlavourId, v.WeightG), out var existing))
                 {
-                    ProductId = product.Id,
-                    FlavourId = v.FlavourId,
-                    WeightG = v.WeightG,
-                    ServingSizeG = v.ServingSizeG,
-                    ServingsPerContainer = servingsPerContainer,
-                    Price = v.Price,
-                    Stock = v.Stock,
-                    SKU = _skuGenerator.Generate(product.Brand!.Code, model.Code, flavour.Code, v.WeightG),
-                    IsDeleted = false
-                };
-            }).ToList();
-
-            _context.ProductVariants.AddRange(variants);
+                    // Update in-place — ID is preserved, cart items stay valid.
+                    existing.ServingSizeG = v.ServingSizeG;
+                    existing.ServingsPerContainer = servingsPerContainer;
+                    existing.Price = v.Price;
+                    existing.Stock = v.Stock;
+                    existing.SKU = sku;
+                    existing.IsDeleted = false; // re-activate if it was previously soft-deleted
+                }
+                else
+                {
+                    // Genuinely new variant — safe to insert.
+                    _context.ProductVariants.Add(new ProductVariant
+                    {
+                        ProductId = product.Id,
+                        FlavourId = v.FlavourId,
+                        WeightG = v.WeightG,
+                        ServingSizeG = v.ServingSizeG,
+                        ServingsPerContainer = servingsPerContainer,
+                        Price = v.Price,
+                        Stock = v.Stock,
+                        SKU = sku,
+                        IsDeleted = false
+                    });
+                }
+            }
 
             var finalImages = await BuildUpdatedGalleryAsync(product, model);
             if (finalImages.Count == 0)

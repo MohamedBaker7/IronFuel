@@ -89,25 +89,33 @@ function updateCartUI(cartCount, cartTotal) {
     showToast('Item added to cart!', 'success');
 }
 
+const formatPrice = (price) =>
+    new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(price);
+
 function showCartSummaryOffcanvas() {
-    // Update total in offcanvas footer
-    //$('#cartOffcanvasTotal').text('$' + parseFloat(response.cart_total).toFixed(2));
 
     if (window.location.pathname.toLowerCase().includes('/cart')) {
         location.reload();
         return;
     }
 
-    $('#cartOffcanvasBody').load('/Cart/CartSummary', function () {
+    $.get('/Cart/GetTotal', function (response) {
+        var newPrice = formatPrice(response.totalAmount) + ' EGP';
+        $('#offcanvasTotalPrice').text(newPrice);
 
+        $('#cartOffcanvasBody').load('/Cart/CartSummary', function () {
 
-        const offcanvas = new bootstrap.Offcanvas($('#cartOffcanvas')[0], {
-            scroll: true,
-            backdrop: true
+            const offcanvas = new bootstrap.Offcanvas($('#cartOffcanvas')[0], {
+                scroll: true,
+                backdrop: true
+            });
+
+            offcanvas.show();
         });
-
-        offcanvas.show();
-    });
+    })
 }
 
 function showCartSuccessAddedOffcanvas(response) {
@@ -264,7 +272,18 @@ $(document).on('click', '#AddToCartBtn', function () {
         return;
     }
 
-    $btn.prop('disabled', true).text('Adding...');
+
+    const $spinner = `
+          <div class="d-flex align-items-center justify-content-center gap-1">
+            ${[...Array(3)].map((_, i) => `
+              <div class="spinner-grow spinner-grow-sm" 
+                   style="width:${0.4 + i * 0.15}rem; height:${0.4 + i * 0.15}rem; animation-delay:${i * 0.15}s" 
+                   role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>`).join('')}
+          </div>`;
+
+    $btn.prop('disabled', true).empty().append($spinner);
 
 
 

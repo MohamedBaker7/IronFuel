@@ -10,6 +10,7 @@ namespace IronFuel.Web.Core.ViewModels
         public string FlavourName { get; set; } = string.Empty;
         public int WeightG { get; set; }
         public int Servings { get; set; }
+        public int Stock { get; set; }
         public string SKU { get; set; } = string.Empty;
         public int Quantity { get; set; }
         public decimal UnitPrice { get; set; }

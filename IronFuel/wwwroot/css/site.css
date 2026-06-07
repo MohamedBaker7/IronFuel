@@ -9,7 +9,7 @@
     --color-text-muted: #c5c5c5;
     --max-width: 1300px;
     --transition-fast: 0.3s;
-    --padding-top: 70px;
+    --padding-top: 90px;
     --success-background: rgb(224 244 232);
     --success-text: rgb(0 163 65);
 }
@@ -651,8 +651,15 @@ body.offcanvas-open .offcanvas {
     left: auto !important;
 }
 
+body.offcanvas-open {
+    overflow: hidden !important;
+}
+
 
 .success-badge {
     background-color: var(--success-background);
     color: var(--success-text);
 }
+
+
+
